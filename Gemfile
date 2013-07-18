@@ -7,7 +7,7 @@ gem 'rails', '3.2.13'
 
 gem 'mysql2'
 gem 'rails-api'
-gem "active_model_serializers"
+#gem "active_model_serializers"
 
 
 # To use ActiveModel has_secure_password
