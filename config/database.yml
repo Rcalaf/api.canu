@@ -35,8 +35,8 @@ production:
   adapter: mysql2
   encoding: utf8
   reconnect: false
-  database: canu_api_production
+  database: api.canu.se_production
   pool: 5
   username: root
-  password:
+  password: wL8XSPha
   socket: /tmp/mysql.sock

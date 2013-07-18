@@ -1,5 +1,11 @@
 class SessionController < ApplicationController
   
+  def user
+    user = User.find_by_token(params[:token])
+    puts user
+    render json: user
+  end
+  
   def login
    if request.post?
       user = User.authenticate(params[:email],params[:password])

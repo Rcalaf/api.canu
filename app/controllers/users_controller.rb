@@ -1,12 +1,23 @@
 class UsersController < ApplicationController
-   before_filter :restrict_access
+   #before_filter :restrict_access, :except => [:create]
   
   def index
     render json: User.all
   end
   
+  def activities
+    user = User.find(params[:user_id])
+    render json: user.activities
+  end
+  
   def create
-    render json: User.create(params[:user])
+    user = {email: params[:email],first_name: params[:first_name].split(' ').first,last_name:params[:first_name].split(' ').last, proxy_password: params[:proxy_password], user_name: params[:user_name]}
+    user = User.create(user)
+    if user.valid?
+      render json: user, status: 201
+    else
+      render json: user.errors, status: 400
+    end
   end
   
   def destroy
