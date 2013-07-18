@@ -1,6 +1,6 @@
 require "bundler/capistrano" 
 #require "whenever/capistrano"
-load 'deploy/assets'
+#load 'deploy/assets'
 
 
 
