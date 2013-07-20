@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130617173418) do
+ActiveRecord::Schema.define(:version => 20130719141358) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
@@ -19,6 +19,9 @@ ActiveRecord::Schema.define(:version => 20130617173418) do
     t.datetime "start"
     t.time     "length"
     t.integer  "user_id"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.string   "address"
   end
 
   create_table "api_keys", :force => true do |t|
