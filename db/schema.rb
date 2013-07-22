@@ -21,7 +21,10 @@ ActiveRecord::Schema.define(:version => 20130719141358) do
     t.integer  "user_id"
     t.float    "latitude"
     t.float    "longitude"
-    t.string   "address"
+    t.string   "street"
+    t.string   "city"
+    t.string   "zip_code"
+    t.string   "country"
   end
 
   create_table "api_keys", :force => true do |t|
