@@ -1,9 +1,13 @@
 # encoding: UTF-8
 class User < ActiveRecord::Base
-  attr_accessible :active, :email, :first_name, :last_name, :proxy_password, :password, :salt, :token, :user_name
+  attr_accessible :active, :email, :first_name, :last_name, :proxy_password, :password, :salt, :token, :user_name, :profile_image
   
   #before_validation :downcase_email
   before_create :create_token_for_new_user
+  
+  has_attached_file :profile_image, 
+                    #:styles => { :small => "265x"}, 
+                    :convert_options => {:all => ["-strip", "-colorspace RGB"]}
   
   validates :email, :presence => {:presence => true,:message => "Escribe un email"}#, :if => :enable_email_validations}
   validates :email, :uniqueness => {:uniqueness => true,:message => "Ya existe un usuario con este email"}#,:if => :enable_email_validations}
