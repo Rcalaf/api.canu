@@ -11,12 +11,19 @@ class UsersController < ApplicationController
   end
   
   def create
-    user = {email: params[:email],first_name: params[:first_name].split(' ').first,last_name:params[:first_name].split(' ').last, proxy_password: params[:proxy_password], user_name: params[:user_name]}
+    user = {email: params[:email],first_name: params[:first_name].split(' ').first,last_name:params[:first_name].split(' ').last, proxy_password: params[:proxy_password], user_name: params[:user_name], profile_image: params[:profile_image]}
     user = User.create(user)
     if user.valid?
       render json: user, status: 201
     else
       render json: user.errors, status: 400
+    end
+  end
+
+  def update
+    user = User.find(params[:id])
+    if user.update_attributes(params[:user])
+      render json: user
     end
   end
   

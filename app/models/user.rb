@@ -6,7 +6,9 @@ class User < ActiveRecord::Base
   before_create :create_token_for_new_user
   
   has_attached_file :profile_image, 
-                    #:styles => { :small => "265x"}, 
+                    #:styles => { :small => "265x"},
+                    :url  => "/assets/:id/:basename.:extension",
+                    :path => ":rails_root/public/assets/:id/:basename.:extension",
                     :convert_options => {:all => ["-strip", "-colorspace RGB"]}
   
   validates :email, :presence => {:presence => true,:message => "Escribe un email"}#, :if => :enable_email_validations}
