@@ -10,7 +10,7 @@ class ActivitiesController < ApplicationController
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
-                longitude: params[:longitude]}
+                longitude: params[:longitude],image: params[:image]}
     activity = Activity.create(activity)
     if activity.valid?
       render json: activity, status: 201

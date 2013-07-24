@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   validates :first_name, :presence => {:presence => true,:message => "Escribe un nombre"}
 # validates :last_name, :presence => {:presence => true,:message => "Escribe un apellido"}
 
-  has_many :activities
+  has_many :activities, :dependent => :destroy
   
   
   def proxy_password

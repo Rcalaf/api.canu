@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130723082814) do
+ActiveRecord::Schema.define(:version => 20130723164248) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
@@ -25,6 +25,10 @@ ActiveRecord::Schema.define(:version => 20130723082814) do
     t.string   "city"
     t.string   "zip_code"
     t.string   "country"
+    t.string   "image_file_name"
+    t.string   "image_content_type"
+    t.integer  "image_file_size"
+    t.datetime "image_updated_at"
   end
 
   create_table "api_keys", :force => true do |t|
