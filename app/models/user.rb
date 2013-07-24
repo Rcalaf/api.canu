@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
   #before_validation :downcase_email
   before_create :create_token_for_new_user
   
+  
   has_attached_file :profile_image, 
                     #:styles => { :small => "265x"},
                     :url  => "/assets/:id/:basename.:extension",
@@ -24,7 +25,11 @@ class User < ActiveRecord::Base
 # validates :last_name, :presence => {:presence => true,:message => "Escribe un apellido"}
 
   has_many :activities, :dependent => :destroy
-  
+  has_and_belongs_to_many :schedule,
+                          class_name: "Activity",
+                          join_table: "activities_users", 
+                          association_foreign_key: "activity_id", 
+                          foreign_key: "user_id"
   
   def proxy_password
     @proxy_password
