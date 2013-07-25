@@ -3,6 +3,10 @@ class ActivitySerializer < ActiveModel::Serializer
   
   has_one :user
   
+ 
+  
+  has_many :attendees, embed: :ids
+  
   def image_url
     object.image.url(:default, timestamp: false)
   end

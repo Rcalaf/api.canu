@@ -3,7 +3,7 @@ class Activity < ActiveRecord::Base
   
   belongs_to :user 
   
-  has_and_belongs_to_many :assistents,
+  has_and_belongs_to_many :attendees,
                           class_name: "User",
                           join_table: "activities_users", 
                           association_foreign_key: "user_id", 

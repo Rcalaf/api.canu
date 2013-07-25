@@ -20,6 +20,23 @@ class ActivitiesController < ApplicationController
     end
   end
   
+  def add_to_schedule
+    activity = Activity.find(params[:activity_id])
+    user = User.find(params[:user_id])
+    user.schedule << activity
+  
+    render json: Activity.all
+    # {}
+  end
+
+  def remove_from_schedule
+    activity = Activity.find(params[:activity_id])
+    user = User.find(params[:user_id])
+    user.schedule.delete activity
+   
+    render json: Activity.all
+  end
+  
   def show
     activity = Activity.find(params[:id])
     render json: activity
