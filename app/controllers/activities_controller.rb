@@ -24,7 +24,6 @@ class ActivitiesController < ApplicationController
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     user.schedule << activity
-  
     render json: Activity.all
     # {}
   end
@@ -33,7 +32,6 @@ class ActivitiesController < ApplicationController
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     user.schedule.delete activity
-   
     render json: Activity.all
   end
   

@@ -8,6 +8,7 @@ class Activity < ActiveRecord::Base
                           join_table: "activities_users", 
                           association_foreign_key: "user_id", 
                           foreign_key: "activity_id"
+                         # order: "start desc"
   
   
   has_attached_file :image, 
