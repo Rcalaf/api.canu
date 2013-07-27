@@ -24,12 +24,13 @@ class User < ActiveRecord::Base
   validates :first_name, :presence => {:presence => true,:message => "Escribe un nombre"}
 # validates :last_name, :presence => {:presence => true,:message => "Escribe un apellido"}
 
-  has_many :activities, :dependent => :destroy
+  has_many :activities, order: "start desc", dependent: :destroy
   has_and_belongs_to_many :schedule,
                           class_name: "Activity",
                           join_table: "activities_users", 
                           association_foreign_key: "activity_id", 
-                          foreign_key: "user_id"
+                          foreign_key: "user_id",
+                          order: "start asc"
   
   def proxy_password
     @proxy_password

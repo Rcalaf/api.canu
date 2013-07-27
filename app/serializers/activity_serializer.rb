@@ -1,10 +1,7 @@
 class ActivitySerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :start,:length, :city, :street, :zip_code, :country, :latitude, :longitude, :image_url
+  attributes :id, :title, :description, :start, :length, :end_date, :city, :street, :zip_code, :country, :latitude, :longitude, :image_url
   
-  has_one :user
-  
- 
-  
+  has_one :user 
   has_many :attendees, embed: :ids
   
   def image_url

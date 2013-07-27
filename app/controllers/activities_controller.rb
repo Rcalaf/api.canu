@@ -6,7 +6,7 @@ class ActivitiesController < ApplicationController
   
   def create
     activity = {description: params[:description],title: params[:title],
-                length: params[:length] , start: params[:start], 
+                length: params[:length] , start: params[:start], end_date:  params[:end], 
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
@@ -24,7 +24,7 @@ class ActivitiesController < ApplicationController
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     user.schedule << activity
-    render json: Activity.all
+    render json: Activity.active
     # {}
   end
 
@@ -32,7 +32,7 @@ class ActivitiesController < ApplicationController
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     user.schedule.delete activity
-    render json: Activity.all
+    render json: Activity.active
   end
   
   def show
