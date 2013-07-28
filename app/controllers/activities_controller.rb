@@ -1,7 +1,7 @@
 class ActivitiesController < ApplicationController
   
   def index
-    render json: Activity.all
+    render json: Activity.active
   end
   
   def create
@@ -17,6 +17,19 @@ class ActivitiesController < ApplicationController
       render json: activity, status: 201
     else
       render json: activity.errors, status: 400
+    end
+  end
+  
+  def edit
+    activity_params = {description: params[:description],title: params[:title],
+                length: params[:length] , start: params[:start], end_date:  params[:end], 
+                user_id: params[:user_id], city: params[:city],
+                street: params[:street], zip_code: params[:zip],
+                country: params[:country], latitude: params[:latitude],
+                longitude: params[:longitude], image: params[:image]}
+    activity = Activity.find(params[:id])            
+    if activity.update_attributes(activity_params)
+      render json: activity
     end
   end
   
