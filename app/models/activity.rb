@@ -1,10 +1,12 @@
 class Activity < ActiveRecord::Base
   attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :image
   
+  before_save :set_end_date
+  
   default_scope order 'start DESC'
   
   #scope :active, lambda{ |end_date| where('end_date > ?', end_date) }
-  scope :active, where('end_date > ?', Time.now)
+  scope :active, where('end_date > ?', Time.zone.now)
   
   belongs_to :user 
   
@@ -21,4 +23,11 @@ class Activity < ActiveRecord::Base
                      :url  => "/assets/:id/:basename.:extension",
                      :path => ":rails_root/public/assets/:id/:basename.:extension",
                      :convert_options => {:all => ["-strip", "-colorspace RGB"]}
+                    
+  
+  private 
+  
+  def set_end_date
+    self.end_date = self.start + (self.length.hour * 60 * 60 + self.length.min * 60 + self.length.sec)
+  end
 end

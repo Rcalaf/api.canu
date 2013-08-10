@@ -6,7 +6,7 @@ class ActivitiesController < ApplicationController
   
   def create
     activity = {description: params[:description],title: params[:title],
-                length: params[:length] , start: params[:start], end_date:  params[:end], 
+                length: params[:length] , start: params[:start], #end_date:  params[:end], 
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
@@ -22,7 +22,7 @@ class ActivitiesController < ApplicationController
   
   def update
     activity_params = {description: params[:description],title: params[:title],
-                length: params[:length] , start: params[:start], end_date:  params[:end], 
+                length: params[:length] , start: params[:start], #end_date:  params[:end], 
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
