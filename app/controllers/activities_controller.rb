@@ -1,7 +1,7 @@
 class ActivitiesController < ApplicationController
   
   def index
-    render json: Activity.active
+    render json: Activity.active(Time.zone.now)
   end
   
   def create
@@ -39,14 +39,14 @@ class ActivitiesController < ApplicationController
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     user.schedule << activity
-    render json: Activity.active
+    render json: Activity.active(Time.zone.now)
   end
 
   def remove_from_schedule
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     user.schedule.delete activity
-    render json: Activity.active
+    render json: Activity.active(Time.zone.now)
   end
   
   def show

@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   
   def activities
     user = User.find(params[:user_id])
-    render json: user.schedule.active
+    render json: user.schedule.active(Time.zone.now)
   end
   
   def create

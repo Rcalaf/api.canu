@@ -5,8 +5,8 @@ class Activity < ActiveRecord::Base
   
   default_scope order 'start DESC'
   
-  #scope :active, lambda{ |end_date| where('end_date > ?', end_date) }
-  scope :active, where('end_date > ?', Time.zone.now)
+  scope :active, lambda{ |end_date| where('end_date > ?', end_date) }
+  #scope :active, where('end_date > ?', Time.zone.now)
   
   belongs_to :user 
   
