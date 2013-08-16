@@ -40,7 +40,6 @@ class ActivitiesController < ApplicationController
     user = User.find(params[:user_id])
     user.schedule << activity
     render json: Activity.active
-    # {}
   end
 
   def remove_from_schedule
