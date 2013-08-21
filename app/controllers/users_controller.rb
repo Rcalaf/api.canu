@@ -30,7 +30,7 @@ class UsersController < ApplicationController
       puts "update USer!!!"
       render json: user
     else 
-      render json: {400, "no update"}
+      render json: user.errors, status: 400
     end
   end
   
