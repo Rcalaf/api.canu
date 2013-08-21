@@ -33,6 +33,16 @@ class UsersController < ApplicationController
     end
   end
   
+  def update_profile_pic
+    user = User.find(params[:user_id])
+    if user.update_attribute(:profile_image,params[:profile_image])
+      render json: user
+    else
+      render json: user.errors, status: 400
+      
+    end
+  end
+  
   def destroy
     render json: User.destroy(params[:id])
   end

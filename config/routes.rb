@@ -7,6 +7,7 @@ CanuApi::Application.routes.draw do
   #end
   match 'users/:user_id/activities/' => 'users#activities', :via => :get
   match 'users/:user_id/activities/' => 'activities#create', :via => :post
+  match 'users/:user_id/profile-image' => 'users#update_profile_pic', :via => :put
   match 'users/:user_id/activities/:activity_id' => 'activities#update', :via => :put
   resources :activities
   match 'activities/:activity_id/attendees' => 'activities#attendees', :via => :get
