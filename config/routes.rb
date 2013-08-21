@@ -9,8 +9,10 @@ CanuApi::Application.routes.draw do
   match 'users/:user_id/activities/' => 'activities#create', :via => :post
   match 'users/:user_id/activities/:activity_id' => 'activities#update', :via => :put
   resources :activities
+  match 'activities/:activity_id/attendees' => 'activities#attendees', :via => :get
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#add_to_schedule', :via => :post
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#remove_from_schedule', :via => :delete
+
  
   
   
