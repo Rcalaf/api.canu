@@ -23,11 +23,10 @@ class UsersController < ApplicationController
   def update
     user = User.find(params[:id])
     user_params = {email: params[:email],first_name: params[:first_name].split(' ').first,last_name:params[:first_name].split(' ').last, user_name: params[:user_name], profile_image: params[:profile_image]}
-    unless params[:proxy_password].nil? || params[:proxy_password].empty?
-      user_params[:proxy_password] = params[:proxy_password]
+    if params[:proxy_password].nil? || params[:proxy_password].empty?
+      user_params[:proxy_password] = user.password
     end
     if user.update_attributes(user_params)
-      puts "update USer!!!"
       render json: user
     else 
       render json: user.errors, status: 400
