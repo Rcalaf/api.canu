@@ -19,7 +19,7 @@ class Activity < ActiveRecord::Base
   
   has_attached_file :image, 
                      #:styles => { :small => "265x"},
-                     :url  => "/assets/:id/:basename.:extension",
+                     :url  => "/system/:id/:class/:basename.:extension",
                      :path => ":rails_root/public/assets/:id/:basename.:extension",
                      :convert_options => {:all => ["-strip", "-colorspace RGB"]}
                     
