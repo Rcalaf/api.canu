@@ -29,6 +29,8 @@ class UsersController < ApplicationController
     if user.update_attributes(user_params)
       puts "update USer!!!"
       render json: user
+    else 
+      render json: {400, "no update"}
     end
   end
   
