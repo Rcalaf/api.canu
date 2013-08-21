@@ -27,6 +27,7 @@ class UsersController < ApplicationController
       user_params[:proxy_password] = params[:proxy_password]
     end
     if user.update_attributes(user_params)
+      puts "update USer!!!"
       render json: user
     end
   end
