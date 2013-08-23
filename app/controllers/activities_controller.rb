@@ -60,7 +60,7 @@ class ActivitiesController < ApplicationController
   end
   
   def destroy
-    render json: Activity.destroy(params[:id])
+    render json: Activity.destroy(params[:activity_id])
   end
   
 end
