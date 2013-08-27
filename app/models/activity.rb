@@ -1,4 +1,6 @@
 class Activity < ActiveRecord::Base
+  RANGE = (2*0.0001)
+  
   attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :image
   
   before_save :set_end_date
@@ -6,6 +8,14 @@ class Activity < ActiveRecord::Base
   default_scope order 'start ASC'
   
   scope :active, lambda{ |end_date| where('end_date > ?', end_date) }
+  scope :in_range, (lambda do |latitude,longitude|  
+    latitude_range_up = latitude + Activity::RANGE
+    latitude_range_down = latitude - Activity::RANGE
+    longitude_range_up = longitude + Activity::RANGE
+    longitude_range_down = longitude - Activity::RANGE   
+    where('latitude < ? AND latitude > ? AND longitude < ? AND longitude > ?',latitude_range_up,latitude_range_down,longitude_range_up,longitude_range_down) 
+    end)
+
   
   belongs_to :user 
   

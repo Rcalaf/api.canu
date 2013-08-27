@@ -1,7 +1,11 @@
 class ActivitiesController < ApplicationController
   
   def index
-    render json: Activity.active(Time.zone.now)
+    if (params[:latitude] && params[:longitude])
+      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
+    else
+      render json: Activity.active(Time.zone.now)
+    end
   end
   
   def create
