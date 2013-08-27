@@ -1,5 +1,5 @@
 class Activity < ActiveRecord::Base
-  RANGE = (10*0.01)
+  RANGE = (30*0.01)
   
   attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :image
   
