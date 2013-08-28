@@ -43,14 +43,22 @@ class ActivitiesController < ApplicationController
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     user.schedule << activity
-    render json: Activity.active(Time.zone.now)
+    if (params[:latitude] && params[:longitude])
+      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
+    else
+      render json: Activity.active(Time.zone.now)
+    end
   end
 
   def remove_from_schedule
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     user.schedule.delete activity
-    render json: Activity.active(Time.zone.now)
+    if (params[:latitude] && params[:longitude])
+      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
+    else
+      render json: Activity.active(Time.zone.now)
+    end
   end
   
   def show
