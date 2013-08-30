@@ -48,13 +48,13 @@ class User < ActiveRecord::Base
     if user
       expected_password = encrypted_password(password,user.salt)
       if user.password != expected_password
-        user = {error: 'password'}
+        user.errors.add :password, "password wrong"
       else
         user.update_attribute(:token, User.generate_access_token)
         #ApiKey.create(user_id: user)
       end
     else
-       user = {error: 'email'}
+       user = User.new.errors.add :email, "email or password wrong"
     end
     user
   end

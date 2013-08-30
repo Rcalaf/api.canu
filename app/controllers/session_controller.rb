@@ -9,10 +9,10 @@ class SessionController < ApplicationController
   def login
    if request.post?
       user = User.authenticate(params[:email],params[:password])
-      if user.class == User
+      if user.errors.empty?
         render json: user
       else
-        render json: user, status: 404
+        render json: user.errors, status: 404
       end
     end
   end
