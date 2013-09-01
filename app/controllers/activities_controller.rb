@@ -1,4 +1,6 @@
 class ActivitiesController < ApplicationController
+  before_filter :restrict_access, :except => [:index, :show, :attendees]
+ 
   
   def index
     if (params[:latitude] && params[:longitude])
@@ -75,4 +77,5 @@ class ActivitiesController < ApplicationController
     render json: Activity.destroy(params[:activity_id])
   end
   
+
 end

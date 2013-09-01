@@ -12,17 +12,20 @@ class User < ActiveRecord::Base
                     :path => ":rails_root/public/system/:id/:class/:basename.:extension",
                     :convert_options => {:all => ["-strip", "-colorspace RGB"]}
   
-  validates :email, :presence => {:presence => true,:message => "Escribe un email"}#, :if => :enable_email_validations}
-  validates :email, :uniqueness => {:uniqueness => true,:message => "Ya existe un usuario con este email"}#,:if => :enable_email_validations}
+  validates :email, :presence => true#, :if => :enable_email_validations}
+  validates :email, :uniqueness => true#,:if => :enable_email_validations}
   validates :email, :format => {:with => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,:message => "El email no tiene el formato correcto"}#, :if => :enable_email_validations }
 
-  validates :proxy_password, :presence => {:presence => true,:message => "Escribe una contraseña"}#, :if => :enable_password_validations}
+  validates :proxy_password, :presence => true #, :if => :enable_password_validations}
   #validates :proxy_password, :length => { :in => 8..60,:message => "La contraseña debe tener 8 caracteres mínimo", :if => :enable_password_validations }
   #validates :proxy_password, :format => {:with =>  /([a-z]+[A-Z]+[0-9]+|[A-Z]+[a-z]+[0-9]+|[A-Z]+[0-9]+[a-z]+|[0-9]+[a-z]+[A-Z]+|[a-z]+[0-9]+[A-Z]+|[0-9]+[A-Z]+[a-z]+)/,:message => "La contraseña debe tener mínimo una mayúscula, una minúscula y un número", :if => :enable_password_validations }
-
   
-  validates :first_name, :presence => {:presence => true,:message => "Escribe un nombre"}
-# validates :last_name, :presence => {:presence => true,:message => "Escribe un apellido"}
+  validates :user_name, :presence => true
+  validates :user_name, :uniqueness => true
+  
+  
+  validates :first_name, :presence => true
+  #validates :last_name, :presence => true
 
   has_many :activities, order: "start desc", dependent: :destroy
   has_and_belongs_to_many :schedule,
