@@ -11,7 +11,7 @@ class UsersController < ApplicationController
   end
   
   def create
-    user = {email: params[:email],first_name: params[:first_name].split(' ').first,last_name:params[:first_name].split(' ').last, proxy_password: params[:proxy_password], user_name: params[:user_name], profile_image: params[:profile_image]}
+    user = {email: params[:email],first_name: params[:first_name],last_name:params[:first_name].split(' ').last, proxy_password: params[:proxy_password], user_name: params[:user_name], profile_image: params[:profile_image]}
     user = User.create(user)
     if user.valid?
       render json: user, status: 201

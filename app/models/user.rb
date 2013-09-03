@@ -46,8 +46,9 @@ class User < ActiveRecord::Base
     self.password = User.encrypted_password(self.proxy_password, self.salt)
   end
   
-  def self.authenticate(email,password)
-    user = User.find_by_email(email.downcase)
+  def self.authenticate(id,password)
+    user = User.find_by_email(id) || User.find_by_user_name(id)
+    puts user
     if user
       expected_password = encrypted_password(password,user.salt)
       if user.password != expected_password
@@ -57,7 +58,8 @@ class User < ActiveRecord::Base
         #ApiKey.create(user_id: user)
       end
     else
-       user = User.new.errors.add :email, "email or password wrong"
+      user = User.new
+      user.errors.add :email, "email or password wrong"
     end
     user
   end
