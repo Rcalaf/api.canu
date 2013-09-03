@@ -47,7 +47,7 @@ class User < ActiveRecord::Base
   end
   
   def self.authenticate(id,password)
-    user = User.find_by_email(id) || User.find_by_user_name(id)
+    user = User.find_by_email(id.downcase) || User.find_by_user_name(id)
     puts user
     if user
       expected_password = encrypted_password(password,user.salt)
