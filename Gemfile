@@ -9,6 +9,7 @@ gem 'mysql2'
 gem 'rails-api'
 gem "active_model_serializers"
 gem 'paperclip'
+gem 'apns'
 
 
 # To use ActiveModel has_secure_password

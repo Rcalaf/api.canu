@@ -14,7 +14,7 @@ class User < ActiveRecord::Base
   
   validates :email, :presence => true#, :if => :enable_email_validations}
   validates :email, :uniqueness => true#,:if => :enable_email_validations}
-  validates :email, :format => {:with => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,:message => "El email no tiene el formato correcto"}#, :if => :enable_email_validations }
+  validates :email, :format => {:with => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/}#,:message => "El email no tiene el formato correcto"}#, :if => :enable_email_validations }
 
   validates :proxy_password, :presence => true #, :if => :enable_password_validations}
   #validates :proxy_password, :length => { :in => 8..60,:message => "La contraseña debe tener 8 caracteres mínimo", :if => :enable_password_validations }
@@ -27,6 +27,7 @@ class User < ActiveRecord::Base
   validates :first_name, :presence => true
   #validates :last_name, :presence => true
 
+  has_many :devices, dependent: :destroy
   has_many :activities, order: "start desc", dependent: :destroy
   has_and_belongs_to_many :schedule,
                           class_name: "Activity",

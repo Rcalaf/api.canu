@@ -33,6 +33,15 @@ class UsersController < ApplicationController
     end
   end
   
+  def set_device_token
+    user = User.find(params[:user_id]) 
+    if user.devices << Device.create(:token => params[:device_token])
+       render json: user
+    else
+       render json: user.errors, status: 400
+    end
+  end
+  
   def update_profile_pic
     user = User.find(params[:user_id])
     if user.update_attribute(:profile_image,params[:profile_image])

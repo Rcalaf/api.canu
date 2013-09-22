@@ -11,16 +11,17 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130726174510) do
+ActiveRecord::Schema.define(:version => 20130922220352) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
     t.text     "description"
     t.datetime "start"
     t.time     "length"
+    t.datetime "end_date"
     t.integer  "user_id"
-    t.double    "latitude"
-    t.double    "longitude"
+    t.float    "latitude"
+    t.float    "longitude"
     t.string   "street"
     t.string   "city"
     t.string   "zip_code"
@@ -29,7 +30,6 @@ ActiveRecord::Schema.define(:version => 20130726174510) do
     t.string   "image_content_type"
     t.integer  "image_file_size"
     t.datetime "image_updated_at"
-    t.datetime "end_date"
   end
 
   create_table "activities_users", :id => false, :force => true do |t|
@@ -42,6 +42,13 @@ ActiveRecord::Schema.define(:version => 20130726174510) do
     t.integer  "user_id"
     t.datetime "created_at",   :null => false
     t.datetime "updated_at",   :null => false
+  end
+
+  create_table "devices", :force => true do |t|
+    t.string   "token"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "users", :force => true do |t|

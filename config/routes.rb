@@ -2,22 +2,17 @@ CanuApi::Application.routes.draw do
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
-  resources :users #do 
-  #  resources :activities
-  #end
+  resources :users 
   match 'users/:user_id/activities/' => 'users#activities', :via => :get
   match 'users/:user_id/activities/' => 'activities#create', :via => :post
   match 'users/:user_id/profile-image' => 'users#update_profile_pic', :via => :put
   match 'users/:user_id/activities/:activity_id' => 'activities#update', :via => :put
   match 'users/:user_id/activities/:activity_id' => 'activities#destroy', :via => :delete
+  match 'users/:user_id/device_token/:device_token' => 'users#set_device_token', :via => :post
   resources :activities
   match 'activities/:activity_id/attendees' => 'activities#attendees', :via => :get
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#add_to_schedule', :via => :post
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#remove_from_schedule', :via => :delete
-  
-
- 
-  
   
  # namespace :session do 
     match 'session/' => 'session#user', :as => 'get_user', :via => :post
