@@ -44,7 +44,9 @@ class ActivitiesController < ApplicationController
   def add_to_schedule
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
-    user.schedule << activity
+    if user.schedule << activity
+      user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
+    end
     if (params[:latitude] && params[:longitude])
       render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
     else
@@ -55,7 +57,9 @@ class ActivitiesController < ApplicationController
   def remove_from_schedule
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
-    user.schedule.delete activity
+    if user.schedule.delete activity
+      user.devices.each {|device| device.activity_notifications.find_by_activity_id(activity.id).delete}
+    end
     if (params[:latitude] && params[:longitude])
       render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
     else

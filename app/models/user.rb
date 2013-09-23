@@ -28,7 +28,7 @@ class User < ActiveRecord::Base
   #validates :last_name, :presence => true
 
   has_many :devices, dependent: :destroy
-  has_many :activities, order: "start desc", dependent: :destroy
+  has_many :activities, order: "start asc", dependent: :destroy
   has_and_belongs_to_many :schedule,
                           class_name: "Activity",
                           join_table: "activities_users", 

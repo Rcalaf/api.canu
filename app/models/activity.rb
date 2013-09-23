@@ -19,6 +19,7 @@ class Activity < ActiveRecord::Base
 
   
   belongs_to :user 
+  has_many :activity_notifications, dependent: :destroy
   
   has_and_belongs_to_many :attendees,
                           class_name: "User",

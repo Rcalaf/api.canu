@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130922220352) do
+ActiveRecord::Schema.define(:version => 20130923012810) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
@@ -36,6 +36,19 @@ ActiveRecord::Schema.define(:version => 20130922220352) do
     t.integer "activity_id"
     t.integer "user_id"
   end
+
+  create_table "activity_notifications", :force => true do |t|
+    t.integer  "device_id",                        :null => false
+    t.integer  "errors_nb",         :default => 0
+    t.datetime "sent_at"
+    t.string   "notification_type"
+    t.integer  "activity_id",                      :null => false
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+  end
+
+  add_index "activity_notifications", ["activity_id"], :name => "index_activity_notifications_on_activity_id"
+  add_index "activity_notifications", ["device_id"], :name => "index_activity_notifications_on_device_id"
 
   create_table "api_keys", :force => true do |t|
     t.string   "access_token"
