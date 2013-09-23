@@ -7,7 +7,7 @@ set :job_template, "bash -l -c 'cd :path && :job'"
 
 # Example:
 #
-set :output, "#{Rails.root}/log/cron_log.log"
+#set :output, "#{Rails.root}/log/cron_log.log"
 #
 # every 2.hours do
 #   command "/usr/bin/some_great_command"
@@ -16,10 +16,10 @@ set :output, "#{Rails.root}/log/cron_log.log"
 # end
 #
 
- job_type :rake, "cd :path && :environment_variable=:environment bundle exec rake :task --silent"
+ job_type :custom_rake, "cd :path && :environment_variable=:environment bundle exec rake :task --silent"
  
  every 5.minutes do
-   rake "apn:notifications:deliver"
+   custom_rake "apn:notifications:deliver"
  end
 
 # Learn more: http://github.com/javan/whenever
