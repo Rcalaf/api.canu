@@ -3,7 +3,8 @@
 # It's helpful, but not entirely necessary to understand cron before proceeding.
 # http://en.wikipedia.org/wiki/Cron
 
-env :PATH, '/bin/bash'
+env :SHELL, '/bin/bash'
+
 #set :job_template, "bash -l -c ':job'"
 
 # Example:
