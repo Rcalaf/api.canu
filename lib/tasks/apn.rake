@@ -10,9 +10,6 @@ namespace :apn do
       ActivityNotification.includes(:activity).where('activities.start <= ? && end_date > ?',Time.zone.now + 30.minutes,Time.zone.now).order('device_id asc').each do |notification|
         device && notification.device.id == device.id ?  badge += 1 : badge = notification.device.badge.to_i + 1
         notifications << APNS::Notification.new(notification.device.token,{:alert => "#{notification.activity.title} in about 30 minutes", :badge => badge, :sound => 'default'})
-        puts "#{(Time.zone.now - notification.activity.start).truncate}"
-        puts Time.zone.now 
-        puts notification.activity.start
         device = notification.device
         notification.delete
       end
