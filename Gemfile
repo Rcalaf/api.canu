@@ -10,6 +10,7 @@ gem 'rails-api'
 gem "active_model_serializers"
 gem 'paperclip'
 gem 'apns'
+gem 'whenever', :require => false
 
 
 # To use ActiveModel has_secure_password
