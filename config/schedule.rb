@@ -3,7 +3,7 @@
 # It's helpful, but not entirely necessary to understand cron before proceeding.
 # http://en.wikipedia.org/wiki/Cron
 
-#set :job_template, "bash -l -c ':job'"
+set :job_template, "bash -l -c ':job' >/dev/null 2>&1"
 
 # Example:
 #
@@ -16,7 +16,7 @@
 # end
 #
 
- job_type :custom_rake, "cd :path && RAILS_ENV=:environment bundle exec rake :task --silent"
+ job_type :custom_rake, "cd :path && RAILS_ENV=:environment bundle exec rake :task --silent "
  
  every 5.minutes do
    custom_rake "apn:notifications:deliver"
