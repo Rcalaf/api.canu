@@ -3,7 +3,9 @@
 # It's helpful, but not entirely necessary to understand cron before proceeding.
 # http://en.wikipedia.org/wiki/Cron
 
-env :SHELL, '/bin/bash'
+
+env :SHELL, '/bin/sh'
+env :PATH, '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin'
 
 set :job_template, ":job"
 
@@ -20,8 +22,9 @@ set :job_template, ":job"
 
  job_type :custom_rake, "cd :path && RAILS_ENV=:environment bundle exec rake :task --silent "
  
- every 5.minutes do
+ every 1.minutes do
    custom_rake "apn:notifications:deliver"
  end
+ 
 
 # Learn more: http://github.com/javan/whenever
