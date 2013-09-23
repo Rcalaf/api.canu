@@ -16,10 +16,10 @@ set :output, "#{Rails.root}/log/cron_log.log"
 # end
 #
 
- job_type :custom,    "cd :path && :environment_variable=:environment bundle exec rake :task --silent"
+ job_type :rake, "cd :path && :environment_variable=:environment bundle exec rake :task --silent"
  
  every 5.minutes do
-   custom "apn:notifications:deliver"
+   rake "apn:notifications:deliver"
  end
 
 # Learn more: http://github.com/javan/whenever
