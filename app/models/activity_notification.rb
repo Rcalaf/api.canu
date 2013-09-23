@@ -3,4 +3,7 @@ class ActivityNotification < ActiveRecord::Base
   
   belongs_to :device
   belongs_to :activity
+  
+  scope :not_sent, where('sent_at IS NULL')
+  scope :go, where('notification_type = ?', 'go')
 end

@@ -16,7 +16,8 @@ class Activity < ActiveRecord::Base
     longitude_range_down = longitude - Activity::RANGE   
     where('latitude < ? AND latitude > ? AND longitude < ? AND longitude > ?',latitude_range_up,latitude_range_down,longitude_range_up,longitude_range_down) 
     end)
-
+  
+  scope :to_be_remind, lambda{ |time| where('start <= ? && end_date > ?', time + 30*60, time) }
   
   belongs_to :user 
   has_many :activity_notifications, dependent: :destroy
