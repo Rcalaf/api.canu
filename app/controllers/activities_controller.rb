@@ -19,7 +19,9 @@ class ActivitiesController < ApplicationController
                 longitude: params[:longitude], image: params[:image]}
     activity = Activity.create(activity)
     if activity.valid?
-      activity.user.schedule << activity
+      if activity.user.schedule << activity
+        activity.user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
+      end
       render json: activity, status: 201
     else
       render json: activity.errors, status: 400
@@ -57,9 +59,7 @@ class ActivitiesController < ApplicationController
   def remove_from_schedule
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
-    if user.schedule.delete activity
-      user.devices.each {|device| device.activity_notifications.find_by_activity_id(activity.id).delete}
-    end
+    user.schedule.delete activity
     if (params[:latitude] && params[:longitude])
       render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
     else
