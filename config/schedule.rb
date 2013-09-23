@@ -5,7 +5,7 @@
 
 env :SHELL, '/bin/bash'
 
-#set :job_template, "bash -l -c ':job'"
+set :job_template, ":job"
 
 # Example:
 #
@@ -18,7 +18,7 @@ env :SHELL, '/bin/bash'
 # end
 #
 
- job_type :custom_rake, "cd :path && RAILS_ENV=:environment bundle exec rake :task --silent"
+ job_type :custom_rake, "cd :path && RAILS_ENV=:environment bundle exec rake :task --silent "
  
  every 5.minutes do
    custom_rake "apn:notifications:deliver"
