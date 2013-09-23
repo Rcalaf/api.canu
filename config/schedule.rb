@@ -3,9 +3,10 @@
 # It's helpful, but not entirely necessary to understand cron before proceeding.
 # http://en.wikipedia.org/wiki/Cron
 
+job_type :custom_rake,    "cd :path && :environment_variable=:environment bundle exec rake :task --silent"
 # Example:
 #
-#set :output, "#{Rails.root}/log/cron_log.log"
+set :output, "#{Rails.root}/log/cron_log.log"
 #
 # every 2.hours do
 #   command "/usr/bin/some_great_command"
@@ -14,7 +15,7 @@
 # end
 #
  every 5.minutes do
-   rake "apn:notifications:deliver"
+   custom_rake "apn:notifications:deliver"
  end
 
 # Learn more: http://github.com/javan/whenever
