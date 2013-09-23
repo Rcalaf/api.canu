@@ -13,7 +13,7 @@
 #   rake "some:great:rake:task"
 # end
 #
- every 10.minutes do
+ every 5.minutes do
    rake "apn:notifications:deliver"
  end
 
