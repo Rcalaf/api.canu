@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   validates :email, :uniqueness => true#,:if => :enable_email_validations}
   validates :email, :format => {:with => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/}#,:message => "El email no tiene el formato correcto"}#, :if => :enable_email_validations }
 
-  validates :proxy_password, :presence => true #, :if => :enable_password_validations}
+  validates :password, :presence => true #, :if => :enable_password_validations}
   #validates :proxy_password, :length => { :in => 8..60,:message => "La contraseña debe tener 8 caracteres mínimo", :if => :enable_password_validations }
   #validates :proxy_password, :format => {:with =>  /([a-z]+[A-Z]+[0-9]+|[A-Z]+[a-z]+[0-9]+|[A-Z]+[0-9]+[a-z]+|[0-9]+[a-z]+[A-Z]+|[a-z]+[0-9]+[A-Z]+|[0-9]+[A-Z]+[a-z]+)/,:message => "La contraseña debe tener mínimo una mayúscula, una minúscula y un número", :if => :enable_password_validations }
   
