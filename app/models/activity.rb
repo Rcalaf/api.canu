@@ -35,7 +35,8 @@ class Activity < ActiveRecord::Base
                      :url  => "/system/:id/:class/:basename.:extension",
                      :path => ":rails_root/public/system/:id/:class/:basename.:extension",
                      :convert_options => {:all => ["-strip", "-colorspace RGB"]}
-                    
+  
+  validates :title, :presence => true         
   
   private 
   
