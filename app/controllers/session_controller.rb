@@ -1,5 +1,6 @@
 class SessionController < ApplicationController
-  
+
+   
   def user
     user = User.find_by_token(params[:token])
     puts user
@@ -23,7 +24,7 @@ class SessionController < ApplicationController
       if user
         render json: user.update_attribute(:token,nil)
       else
-        render json: nil, status: 404  
+        render json: nil, status: 200 
       end
     end
   end
