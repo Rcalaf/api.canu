@@ -18,6 +18,7 @@ class ActivitiesController < ApplicationController
                 country: params[:country], latitude: params[:latitude],
                 longitude: params[:longitude], image: params[:image]}
     activity = Activity.create(activity)
+    puts activity.start
     if activity.valid?
       if activity.user.schedule << activity
         activity.user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
