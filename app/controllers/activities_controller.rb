@@ -18,7 +18,9 @@ class ActivitiesController < ApplicationController
                 country: params[:country], latitude: params[:latitude],
                 longitude: params[:longitude], image: params[:image]}
     start_date_utc = Time.parse(params[:start]).utc
+    puts start_date_utc
     activity = Activity.create(activity)
+    puts activity.start
     if activity.valid?
       activity.update_attribute(:start,start_date_utc)
       if activity.user.schedule << activity
