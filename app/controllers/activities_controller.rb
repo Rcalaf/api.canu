@@ -30,7 +30,7 @@ class ActivitiesController < ApplicationController
   
   def update
     activity_params = {description: params[:description],title: params[:title].rstrip,
-                length: params[:length] , start: Time.parse(params[:start]).utc, #end_date:  params[:end], 
+                length: params[:length] , start: Time.parse(params[:start]).utc.to_s, #end_date:  params[:end], 
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
