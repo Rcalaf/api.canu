@@ -17,8 +17,10 @@ class ActivitiesController < ApplicationController
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
                 longitude: params[:longitude], image: params[:image]}
+    start_date_utc = Time.parse(params[:start]).utc
     activity = Activity.create(activity)
     if activity.valid?
+      activity.update_attribute(:start,start_date_utc)
       if activity.user.schedule << activity
         #activity.user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
       end
