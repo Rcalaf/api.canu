@@ -20,7 +20,7 @@ class ActivitiesController < ApplicationController
     activity = Activity.create(activity)
     if activity.valid?
       if activity.user.schedule << activity
-        activity.user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
+        #activity.user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
       end
       render json: activity, status: 201
     else
@@ -47,7 +47,7 @@ class ActivitiesController < ApplicationController
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     if user.schedule << activity
-      user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
+      #user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
     end
     if (params[:latitude] && params[:longitude])
       render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
@@ -60,7 +60,7 @@ class ActivitiesController < ApplicationController
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     if user.schedule.delete activity
-      user.devices.each {|device| device.activity_notifications.find_by_activity_id(activity.id).delete if device.activity_notifications.find_by_activity_id(activity.id)}
+      #user.devices.each {|device| device.activity_notifications.find_by_activity_id(activity.id).delete if device.activity_notifications.find_by_activity_id(activity.id)}
     end
     if (params[:latitude] && params[:longitude])
       render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
