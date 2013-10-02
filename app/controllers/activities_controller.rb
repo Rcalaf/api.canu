@@ -12,13 +12,12 @@ class ActivitiesController < ApplicationController
   
   def create
     activity = {description: params[:description],title: params[:title].rstrip,
-                length: params[:length] , start: params[:start], #end_date:  params[:end], 
+                length: params[:length] , start: Time.parse(params[:start]).utc, #end_date:  params[:end], 
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
                 longitude: params[:longitude], image: params[:image]}
     activity = Activity.create(activity)
-    puts activity.start
     if activity.valid?
       if activity.user.schedule << activity
         activity.user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
@@ -31,7 +30,7 @@ class ActivitiesController < ApplicationController
   
   def update
     activity_params = {description: params[:description],title: params[:title].rstrip,
-                length: params[:length] , start: params[:start], #end_date:  params[:end], 
+                length: params[:length] , start: Time.parse(params[:start]).utc, #end_date:  params[:end], 
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
