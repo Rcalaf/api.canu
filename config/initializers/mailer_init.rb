@@ -1,3 +1,4 @@
+=begin
 ActionMailer::Base.delivery_method = :smtp
 ActionMailer::Base.smtp_settings = {
   :address => 'smtp.canu.se',
@@ -11,3 +12,4 @@ ActionMailer::Base.smtp_settings = {
 }
 
 ActionMailer::Base.default_url_options[:host] = "www.canu.se"
+=end
