@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130923145231) do
+ActiveRecord::Schema.define(:version => 20131112171311) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
@@ -78,6 +78,8 @@ ActiveRecord::Schema.define(:version => 20130923145231) do
     t.string   "profile_image_content_type"
     t.integer  "profile_image_file_size"
     t.datetime "profile_image_updated_at"
+    t.float    "latitude"
+    t.float    "longitude"
   end
 
 end

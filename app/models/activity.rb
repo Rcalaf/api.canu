@@ -3,9 +3,8 @@ class Activity < ActiveRecord::Base
   RANGE = (100*0.01)
   
   attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :image
-  
   before_save :set_end_date
-  
+
   default_scope order 'start ASC'
   
   scope :active, lambda{ |end_date| where('end_date > ?', end_date) }
@@ -27,8 +26,6 @@ class Activity < ActiveRecord::Base
                           join_table: "activities_users", 
                           association_foreign_key: "user_id", 
                           foreign_key: "activity_id"
-                         
-  
   
   has_attached_file :image, 
                      #:styles => { :small => "265x"},
