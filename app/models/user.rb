@@ -36,6 +36,14 @@ class User < ActiveRecord::Base
                           association_foreign_key: "activity_id", 
                           foreign_key: "user_id",
                           order: "start asc"
+                          
+   scope :in_range, (lambda do |latitude,longitude|  
+          latitude_range_up = latitude + Activity::RANGE
+          latitude_range_down = latitude - Activity::RANGE
+          longitude_range_up = longitude + Activity::RANGE
+          longitude_range_down = longitude - Activity::RANGE   
+          where('latitude < ? AND latitude > ? AND longitude < ? AND longitude > ?',latitude_range_up,latitude_range_down,longitude_range_up,longitude_range_down) 
+          end)
   
   def proxy_password
     @proxy_password

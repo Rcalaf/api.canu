@@ -4,6 +4,9 @@ class Activity < ActiveRecord::Base
   
   attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :image
   before_save :set_end_date
+  after_update :send_edited_notification
+  after_create :send_created_notification
+  after_destroy :send_deleted_notificaiton
 
   default_scope order 'start ASC'
   
@@ -36,6 +39,41 @@ class Activity < ActiveRecord::Base
   validates :title, :presence => true         
   
   private 
+  
+  def send_edited_notification
+    notifications = []
+    User.attendees.each do |user|
+      user.devices.each do |device| 
+         device.update_attribute(:badge,device.badge + 1)
+         notifications << APNS::Notification.new(device.token,{:alert => "The activity #{self.title} that you are attending has been updated!",:badge => device.badge,:sound => 'default'})
+      end
+    end
+    APNS.send_notifications(notifications) unless notifications.empty?
+  end
+  
+  def send_created_notification
+    notifications = []
+    User.in_range(self.latitude,self.longitude).each do |user|
+      user.devices.each do |device| 
+         device.update_attribute(:badge,device.badge + 1)
+         notifications << APNS::Notification.new(device.token,{:alert => "The activity #{self.title} has been created!",:badge => device.badge,:sound => 'default'})
+      end
+    end
+    APNS.send_notifications(notifications) unless notifications.empty?
+  end
+  
+  def send_deleted_notificaiton
+    notifications = []
+    self.attendees.each do |user|
+      user.devices.each do |device| 
+         device.update_attribute(:badge,device.badge + 1)
+         notifications << APNS::Notification.new(device.token,{:alert => "The activity #{self.title} that you would attend has been deleted!",:badge => device.badge,:sound => 'default'})
+      end
+    end
+    APNS.send_notifications(notifications) unless notifications.empty?
+  end
+  
+  
   
   def set_end_date
     self.end_date = self.start + (self.length.hour * 60 * 60 + self.length.min * 60 + self.length.sec)
