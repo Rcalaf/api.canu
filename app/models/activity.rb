@@ -6,7 +6,7 @@ class Activity < ActiveRecord::Base
   before_save :set_end_date
   after_update :send_edited_notification
   after_create :send_created_notification
-  #after_destroy :send_deleted_notificaiton
+  before_destroy :send_deleted_notificaiton
 
   default_scope order 'start ASC'
   
@@ -45,7 +45,7 @@ class Activity < ActiveRecord::Base
     self.attendees.each do |user|
       user.devices.each do |device| 
          device.update_attribute(:badge,device.badge + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity #{self.title} that you are attending has been updated!",:badge => device.badge,:sound => 'default'})
+         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you are attending has been updated!",:badge => device.badge,:sound => 'default'})
       end
     end
     APNS.send_notifications(notifications) unless notifications.empty?
@@ -56,7 +56,7 @@ class Activity < ActiveRecord::Base
     User.in_range(self.latitude,self.longitude).each do |user|
       user.devices.each do |device| 
          device.update_attribute(:badge,device.badge + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity #{self.title} has been created!",:badge => device.badge,:sound => 'default'})
+         notifications << APNS::Notification.new(device.token,{:alert => "The activity #{self.title} has been created on #{self.start.strftime('%b %d')} at #{self.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default'})
       end
     end
     APNS.send_notifications(notifications) unless notifications.empty?
