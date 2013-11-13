@@ -4,7 +4,7 @@ class Activity < ActiveRecord::Base
   
   attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :image
   before_save :set_end_date
-  #after_update :send_edited_notification
+  after_update :send_edited_notification
   after_create :send_created_notification
   #after_destroy :send_deleted_notificaiton
 
@@ -42,7 +42,7 @@ class Activity < ActiveRecord::Base
   
   def send_edited_notification
     notifications = []
-    User.attendees.each do |user|
+    self.attendees.each do |user|
       user.devices.each do |device| 
          device.update_attribute(:badge,device.badge + 1)
          notifications << APNS::Notification.new(device.token,{:alert => "The activity #{self.title} that you are attending has been updated!",:badge => device.badge,:sound => 'default'})
