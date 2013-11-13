@@ -56,7 +56,7 @@ class Activity < ActiveRecord::Base
     User.in_range(self.latitude,self.longitude).each do |user|
       user.devices.each do |device| 
          device.update_attribute(:badge,device.badge + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity #{self.title} has been created on #{self.start.strftime('%b %d')} at #{self.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default'})
+         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" has been created on #{self.start.strftime('%b %d')} at #{self.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default'})
       end
     end
     APNS.send_notifications(notifications) unless notifications.empty?
@@ -67,7 +67,7 @@ class Activity < ActiveRecord::Base
     self.attendees.each do |user|
       user.devices.each do |device| 
          device.update_attribute(:badge,device.badge + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity #{self.title} that you would attend has been deleted!",:badge => device.badge,:sound => 'default'})
+         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you would attend has been deleted!",:badge => device.badge,:sound => 'default'})
       end
     end
     APNS.send_notifications(notifications) unless notifications.empty?
