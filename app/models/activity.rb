@@ -4,9 +4,9 @@ class Activity < ActiveRecord::Base
   
   attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :image
   before_save :set_end_date
-  after_update :send_edited_notification
+  #after_update :send_edited_notification
   after_create :send_created_notification
-  after_destroy :send_deleted_notificaiton
+  #after_destroy :send_deleted_notificaiton
 
   default_scope order 'start ASC'
   
