@@ -4,20 +4,22 @@ class Activity < ActiveRecord::Base
   
   attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :image
   before_save :set_end_date
-  after_update :send_edited_notification
+  before_update :send_edited_notification
   after_create :send_created_notification
   before_destroy :send_deleted_notificaiton
 
   default_scope order 'start ASC'
   
   scope :active, lambda{ |end_date| where('end_date > ?', end_date) }
-  scope :in_range, (lambda do |latitude,longitude|  
+  scope :in_range_2, (lambda do |latitude,longitude|  
     latitude_range_up = latitude + Activity::RANGE
     latitude_range_down = latitude - Activity::RANGE
     longitude_range_up = longitude + Activity::RANGE
     longitude_range_down = longitude - Activity::RANGE   
     where('latitude < ? AND latitude > ? AND longitude < ? AND longitude > ?',latitude_range_up,latitude_range_down,longitude_range_up,longitude_range_down) 
     end)
+    
+  scope :in_range, select('*')
   
   scope :to_be_remind, lambda{ |time| where('start <= ? && end_date > ?', time + 30*60, time) }
   
@@ -29,6 +31,8 @@ class Activity < ActiveRecord::Base
                           join_table: "activities_users", 
                           association_foreign_key: "user_id", 
                           foreign_key: "activity_id"
+  
+  has_many :messages, order: "created_at asc", dependent: :destroy
   
   has_attached_file :image, 
                      #:styles => { :small => "265x"},
@@ -44,7 +48,7 @@ class Activity < ActiveRecord::Base
     notifications = []
     self.attendees.each do |user|
       user.devices.each do |device| 
-         device.update_attribute(:badge,device.badge + 1)
+         device.update_attribute(:badge,device.badge.to_i + 1)
          notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you are attending has been updated!",:badge => device.badge,:sound => 'default'})
       end
     end
@@ -55,7 +59,7 @@ class Activity < ActiveRecord::Base
     notifications = []
     User.in_range(self.latitude,self.longitude).each do |user|
       user.devices.each do |device| 
-         device.update_attribute(:badge,device.badge + 1)
+         device.update_attribute(:badge,device.badge.to_i + 1)
          notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" has been created on #{self.start.strftime('%b %d')} at #{self.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default'})
       end
     end
@@ -66,7 +70,7 @@ class Activity < ActiveRecord::Base
     notifications = []
     self.attendees.each do |user|
       user.devices.each do |device| 
-         device.update_attribute(:badge,device.badge + 1)
+         device.update_attribute(:badge,device.badge.to_i + 1)
          notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you would attend has been deleted!",:badge => device.badge,:sound => 'default'})
       end
     end

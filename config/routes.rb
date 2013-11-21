@@ -9,17 +9,21 @@ CanuApi::Application.routes.draw do
   match 'users/:user_id/device_token' => 'users#set_device_token', :via => :post
   match 'users/:user_id/activities/:activity_id' => 'activities#update', :via => :put
   match 'users/:user_id/activities/:activity_id' => 'activities#destroy', :via => :delete
+  
   resources :activities
   match 'activities/:activity_id/attendees' => 'activities#attendees', :via => :get
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#add_to_schedule', :via => :post
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#remove_from_schedule', :via => :delete
   
+  match 'activities/:activity_id/chat' => 'messages#messages', :via => :get
+  match 'activities/:activity_id/chat' => 'messages#create', :via => :post
+  
   match 'devices/:device_token/badge' => 'devices#edit_badge', :via => :put
   
  # namespace :session do 
-    match 'session/' => 'session#user', :as => 'get_user', :via => :post
-    match 'session/login/' => 'session#login', :as => 'login', :via => :post
-    match 'session/logout/' => 'session#logout', as: 'logout', :via => :post
+  match 'session/' => 'session#user', :as => 'get_user', :via => :post
+  match 'session/login/' => 'session#login', :as => 'login', :via => :post
+  match 'session/logout/' => 'session#logout', as: 'logout', :via => :post
     
 #  end
 #  match 'users/' => 'users#create', :as => :user, :method => :post

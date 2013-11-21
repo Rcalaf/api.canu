@@ -36,6 +36,7 @@ class User < ActiveRecord::Base
                           association_foreign_key: "activity_id", 
                           foreign_key: "user_id",
                           order: "start asc"
+  has_many :messages, order: "created_at asc", dependent: :destroy
                           
    scope :in_range, (lambda do |latitude,longitude|  
           latitude_range_up = latitude + Activity::RANGE

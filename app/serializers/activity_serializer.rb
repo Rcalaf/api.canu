@@ -13,4 +13,10 @@ class ActivitySerializer < ActiveModel::Serializer
     data.delete :token
     data
   end
+=begin  
+  def user
+    user = object.user
+    {id:user.id,user_name: user.user_name,profile_pic: user.profile_image.url(:default, timestamp: false) }
+  end
+=end
 end
