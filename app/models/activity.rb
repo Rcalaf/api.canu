@@ -11,7 +11,7 @@ class Activity < ActiveRecord::Base
   default_scope order 'start ASC'
   
   scope :active, lambda{ |end_date| where('end_date > ?', end_date) }
-  scope :in_range_2, (lambda do |latitude,longitude|  
+  scope :in_range, (lambda do |latitude,longitude|  
     latitude_range_up = latitude + Activity::RANGE
     latitude_range_down = latitude - Activity::RANGE
     longitude_range_up = longitude + Activity::RANGE
@@ -19,7 +19,7 @@ class Activity < ActiveRecord::Base
     where('latitude < ? AND latitude > ? AND longitude < ? AND longitude > ?',latitude_range_up,latitude_range_down,longitude_range_up,longitude_range_down) 
     end)
     
-  scope :in_range, select('*')
+  scope :in_range_2, select('*')
   
   scope :to_be_remind, lambda{ |time| where('start <= ? && end_date > ?', time + 30*60, time) }
   
