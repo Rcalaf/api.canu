@@ -15,7 +15,7 @@ class Message < ActiveRecord::Base
      receivers.each do |user|
        user.devices.each do |device| 
           device.update_attribute(:badge,device.badge.to_i + 1)
-          notifications << APNS::Notification.new(device.token,{:alert => "#{self.text[0..104]}...",:badge => device.badge,:sound => 'default'})
+          notifications << APNS::Notification.new(device.token,{:alert => "#{self.activity.title} Chat:\n#{self.text[0..(102-self.activity.title.size)]}...",:badge => device.badge,:sound => 'default'})
        end
      end
      APNS.send_notifications(notifications) unless notifications.empty?
