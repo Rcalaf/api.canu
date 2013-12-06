@@ -49,7 +49,7 @@ class Activity < ActiveRecord::Base
     self.attendees.each do |user|
       user.devices.each do |device| 
          device.update_attribute(:badge,device.badge.to_i + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you are attending has been updated!",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'created'}}})
+         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you are attending has been updated!",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edit activity'}}})
       end
     end
     APNS.send_notifications(notifications) unless notifications.empty?
@@ -60,7 +60,7 @@ class Activity < ActiveRecord::Base
     User.in_range(self.latitude,self.longitude).each do |user|
       user.devices.each do |device| 
          device.update_attribute(:badge,device.badge.to_i + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" has been created on #{self.start.strftime('%b %d')} at #{self.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edited'}}})
+         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" has been created on #{self.start.strftime('%b %d')} at #{self.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'create activity'}}})
       end
     end
     APNS.send_notifications(notifications) unless notifications.empty?
@@ -71,7 +71,7 @@ class Activity < ActiveRecord::Base
     self.attendees.each do |user|
       user.devices.each do |device| 
          device.update_attribute(:badge,device.badge.to_i + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you would attend has been deleted!",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'deleted'}}})
+         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you would attend has been deleted!",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'delete activity'}}})
       end
     end
     APNS.send_notifications(notifications) unless notifications.empty?
