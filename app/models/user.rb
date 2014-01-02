@@ -28,6 +28,7 @@ class User < ActiveRecord::Base
   validates :first_name, :presence => true
   #validates :last_name, :presence => true
 
+  #has_many :api_keys, order: "created_at asc", dependent: :destroy
   has_many :devices, dependent: :destroy
   has_many :activities, order: "start asc", dependent: :destroy
   has_and_belongs_to_many :schedule,
@@ -59,14 +60,13 @@ class User < ActiveRecord::Base
   
   def self.authenticate(id,password)
     user = User.find_by_email(id.downcase) || User.find_by_user_name(id)
-    puts user
     if user
       expected_password = encrypted_password(password,user.salt)
       if user.password != expected_password
         user.errors.add :password, "password wrong"
       else
         user.update_attribute(:token, User.generate_access_token)
-        #ApiKey.create(user_id: user)
+        #ApiKey.create(user_id: user.id) if user.api_keys.empty?
       end
     else
       user = User.new

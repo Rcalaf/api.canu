@@ -3,7 +3,9 @@ class SessionController < ApplicationController
    
   def user
     user = User.find_by_token(params[:token])
-    puts user
+    #api_key = ApiKey.find_by_access_token(params[:token])
+    #user = api_key.nil? ? nil : api_key.user
+    #puts user
     render json: user
   end
   
@@ -21,8 +23,11 @@ class SessionController < ApplicationController
   def logout
     if request.post?
       user = User.find_by_token(params[:token])
+      #api_key = ApiKey.find_by_access_token(params[:token])
+      #user = api_key.nil? ? nil : api_key.user
       if user
         render json: user.update_attribute(:token,nil)
+      #  render json: user, status: 200 
       else
         render json: nil, status: 200 
       end

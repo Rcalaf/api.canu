@@ -5,6 +5,7 @@ class UserSerializer < ActiveModel::Serializer
     object.profile_image.url(:default, timestamp: false)
   end
   
-#  def schedule
-#  end
+  #def token
+  # object.api_keys.first.access_token if object.api_keys.first     
+  #end
 end
