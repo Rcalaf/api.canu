@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131114184028) do
+ActiveRecord::Schema.define(:version => 20140112195403) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
@@ -88,6 +88,8 @@ ActiveRecord::Schema.define(:version => 20131114184028) do
     t.datetime "profile_image_updated_at"
     t.float    "latitude"
     t.float    "longitude"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end

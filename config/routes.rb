@@ -24,6 +24,7 @@ CanuApi::Application.routes.draw do
   match 'session/' => 'session#user', :as => 'get_user', :via => :post
   match 'session/login/' => 'session#login', :as => 'login', :via => :post
   match 'session/logout/' => 'session#logout', as: 'logout', :via => :post
+
     
 #  end
 #  match 'users/' => 'users#create', :as => :user, :method => :post
