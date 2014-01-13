@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-   before_filter :restrict_access, :except => [:create]
+   before_filter :restrict_access, :except => [:create,:mail_verification]
   
   def index
     render json: User.all
@@ -10,18 +10,20 @@ class UsersController < ApplicationController
     render json: user.schedule.active(Time.zone.now)
   end
   
-  #def mail_verification
-  #  user = User.find_by_email(params[:email])
-  #  if user
-  #      user.update_attribute(:active, true)
-  #   end
-  #end
+  def mail_verification
+    parsed_token = params[:token].split('#')
+    user = User.find(parsed_token[1])
+    if user && user.mail_verification_token == parsed_token[0]
+        user.update_attribute(:active, true)
+        redirect_to 'http://www.canu.se/emailconfirmation'
+     end
+  end
   
   def create
     user = {email: params[:email],first_name: params[:first_name],last_name:params[:first_name].split(' ').last, proxy_password: params[:proxy_password], user_name: params[:user_name], profile_image: params[:profile_image]}
     user = User.create(user)
     if user.valid?
-     # Mailer.welcome(user).deliver
+      Mailer.welcome(user).deliver
       render json: user, status: 201
     else
       render json: user.errors, status: 400

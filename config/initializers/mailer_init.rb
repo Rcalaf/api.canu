@@ -10,4 +10,4 @@ ActionMailer::Base.smtp_settings = {
   :openssl_verify_mode => 'none'
 }
 
-ActionMailer::Base.default_url_options[:host] = "canu.se"
+ActionMailer::Base.default_url_options[:host] = "api.canu.se"

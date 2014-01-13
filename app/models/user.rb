@@ -2,7 +2,7 @@
 class User < ActiveRecord::Base
   attr_accessible :active, :email, :first_name, :last_name, :proxy_password, :password, :salt, :token, :user_name, :profile_image, :latitude, :longitude
   
-  #before_validation :downcase_email
+  before_validation :downcase_email
   before_create :create_token_for_new_user
   
   
@@ -73,6 +73,10 @@ class User < ActiveRecord::Base
       user.errors.add :email, "email or password wrong"
     end
     user
+  end
+  
+  def mail_verification_token
+    Digest::SHA1.hexdigest(self.id.to_s + salt + self.email)
   end
   
   private  

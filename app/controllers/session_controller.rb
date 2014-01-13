@@ -6,7 +6,11 @@ class SessionController < ApplicationController
     #api_key = ApiKey.find_by_access_token(params[:token])
     #user = api_key.nil? ? nil : api_key.user
     #puts user
-    render json: user
+    if user
+      render json: user, status:200
+    else
+      render json: {}, status:400
+    end
   end
   
   def login

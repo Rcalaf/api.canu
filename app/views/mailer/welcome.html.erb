@@ -411,7 +411,7 @@
 											<br />
 											Super nice to have you here. Hope you are enjoying scrolling into the future with CANU in your hands!<br /><br />
 											<h2> 
-											<a href="#">Please confirm your e-mail.</a>
+											<%= link_to 'Please confirm your e-mail.',mail_verification_url(@user.mail_verification_token + "#" + @user.id.to_s)%>
 											<!--<%= link_to 'Get it in the App Store', ''%>-->
 											</h2>
 <br />
