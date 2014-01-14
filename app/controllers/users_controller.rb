@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-   before_filter :restrict_access, :except => [:create,:mail_verification]
+   before_filter :restrict_access, :except => [:create,:mail_verification,:sms_verification]
   
   def index
     render json: User.all
@@ -17,6 +17,10 @@ class UsersController < ApplicationController
         user.update_attribute(:active, true)
         redirect_to 'http://www.canu.se/emailconfirmation'
      end
+  end
+  
+  def sms_verification
+    render json: params
   end
   
   def create
