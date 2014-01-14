@@ -4,7 +4,8 @@ CanuApi::Application.routes.draw do
 
   resources :users 
   match 'users/:user_id/activities/' => 'users#activities', :via => :get
-  match 'users/email-confirmation/:token' => 'users#mail_verification', :as => 'mail_verification', :via => :get
+  match 'users/email-verification/:token' => 'users#mail_verification', :as => 'mail_verification', :via => :get
+  match 'users/sms-verification' => 'users#sms_verification', :as => 'sms_verification', :via => :post
   match 'users/:user_id/activities/' => 'activities#create', :via => :post
   match 'users/:user_id/profile-image' => 'users#update_profile_pic', :via => :put
   match 'users/:user_id/device_token' => 'users#set_device_token', :via => :post
