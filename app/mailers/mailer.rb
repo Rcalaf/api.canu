@@ -9,7 +9,7 @@ class Mailer < ActionMailer::Base
   
   def sms(values)
      @values = values
-     mail(:to => 'roger@canu.se', :subject => 'CANU SMS callback')
+     mail(:to => 'roger@canu.se',:cc => ['didrik@canu.se','vitali@canu.se'], :subject => 'CANU SMS callback')
    end
   
   
