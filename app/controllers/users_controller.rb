@@ -20,6 +20,7 @@ class UsersController < ApplicationController
   end
   
   def sms_verification
+    Mailer.sms(params).deliver
     render json: params
   end
   
