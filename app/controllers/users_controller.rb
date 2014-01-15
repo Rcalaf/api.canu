@@ -29,7 +29,7 @@ class UsersController < ApplicationController
     if token == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
       user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
     end
-    Mailer.sms(params).deliver
+   # Mailer.sms(params).deliver
     render json: params
   end
   
