@@ -13,6 +13,14 @@ class SessionController < ApplicationController
     end
   end
   
+  def check_user_name
+    if User.find_by_user_name(params[:user_name])
+      render json: {}, status: 400
+    else
+      render json: {}, status: 200
+    end
+  end
+  
   def login
    if request.post?
       user = User.authenticate(params[:email],params[:password])
