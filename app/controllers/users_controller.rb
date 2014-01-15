@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-   before_filter :restrict_access, :except => [:create,:mail_verification,:sms_verification]
+   before_filter :restrict_access, :except => [:create,:mail_verification,:check_user_name,:sms_verification]
   
   def index
     render json: User.all
@@ -9,6 +9,7 @@ class UsersController < ApplicationController
     user = User.find(params[:user_id])
     render json: user.schedule.active(Time.zone.now)
   end
+
   
   def mail_verification
     parsed_token = params[:token].split('#')
@@ -20,6 +21,7 @@ class UsersController < ApplicationController
   end
   
   def sms_verification
+    
     Mailer.sms(params).deliver
     render json: params
   end
