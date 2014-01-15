@@ -1,6 +1,6 @@
 # encoding: UTF-8
 class User < ActiveRecord::Base
-  attr_accessible :active, :email, :first_name, :last_name, :proxy_password, :password, :salt, :token, :user_name, :profile_image, :latitude, :longitude
+  attr_accessible :active, :email, :first_name, :last_name, :proxy_password, :password, :salt, :token, :user_name, :profile_image, :latitude, :longitude, :phone_number, :phone_verified
   
   before_validation :downcase_email
   before_create :create_token_for_new_user
