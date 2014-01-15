@@ -24,9 +24,13 @@ class UsersController < ApplicationController
     text = params[:text]
     data = text.split('#')
     token = data[0]
+    puts token
+    puts id
     id = data[1]
     user = User.find(id)
+    puts user
     if token == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
+      puts 'in'
       user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
     end
     Mailer.sms(params).deliver
