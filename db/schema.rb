@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140112195403) do
+ActiveRecord::Schema.define(:version => 20140115112811) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
@@ -90,6 +90,8 @@ ActiveRecord::Schema.define(:version => 20140112195403) do
     t.float    "longitude"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "phone_number"
+    t.boolean  "phone_verified"
   end
 
 end

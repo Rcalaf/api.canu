@@ -21,7 +21,14 @@ class UsersController < ApplicationController
   end
   
   def sms_verification
-    
+    text = params[:text]
+    data = text.split('#')
+    token = data[0]
+    id = data[1]
+    user = User.find(id)
+    if token == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
+      user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
+    end
     Mailer.sms(params).deliver
     render json: params
   end
