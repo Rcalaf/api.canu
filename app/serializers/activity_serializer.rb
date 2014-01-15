@@ -1,7 +1,7 @@
 class ActivitySerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :start, :length, :end_date, :city, :street, :zip_code, :country, :latitude, :longitude, :image_url
+  attributes :id, :title, :description, :start, :length, :end_date, :city, :street, :zip_code, :country, :latitude, :longitude, :image_url, :user
   
-  has_one :user
+  #has_one :user
   has_many :attendees, embed: :ids
   
   def image_url
@@ -13,10 +13,11 @@ class ActivitySerializer < ActiveModel::Serializer
     data.delete :token
     data
   end
-=begin  
+  
+
   def user
     user = object.user
-    {id:user.id,user_name: user.user_name,profile_pic: user.profile_image.url(:default, timestamp: false) }
+    {id:user.id,user_name: user.user_name, first_name: user.user_name,email: user.email,active: user.active, phone_number: user.phone_number, phone_verified: user.phone_verified ,profile_pic: user.profile_image.url(:default, timestamp: false) }
   end
-=end
+
 end
