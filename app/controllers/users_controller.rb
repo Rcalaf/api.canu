@@ -25,8 +25,8 @@ class UsersController < ApplicationController
     data = text.split('#')
     token = data[0]
     puts token
-    puts id
     id = data[1]
+    puts id
     user = User.find(id)
     puts user
     if token == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
