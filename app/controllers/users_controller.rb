@@ -22,11 +22,11 @@ class UsersController < ApplicationController
   def sms_verification
     text,info = params[:text].split('.')
     token, id = info.rstrip.split('#')
-    user = User.find(id)
-    if token == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
+    Mailer.sms({token: token, user_id:id, text: text}).deliver
+    user = User.find_by_id(id)
+    if user && token == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
       user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
     end
-    Mailer.sms({token: token, user_id:id, text: text}).deliver
     render json: params
   end
   
