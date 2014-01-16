@@ -10,26 +10,23 @@ class UsersController < ApplicationController
     render json: user.schedule.active(Time.zone.now)
   end
   
-  
   def mail_verification
     parsed_token = params[:token].split('#')
     user = User.find(parsed_token[1])
     if user && user.mail_verification_token == parsed_token[0]
         user.update_attribute(:active, true)
-        redirect_to 'http://www.canu.se/emailconfirmation'
+        redirect_to 'http://www.canu.se/email-confirmed'
      end
   end
   
   def sms_verification
-    text = params[:text]
-    data = text.split('#')
-    token = data[0]
-    id = data[1]
+    text,info = params[:text].split('.')
+    token, id = info.rstrip.split('#')
     user = User.find(id)
     if token == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
       user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
     end
-   # Mailer.sms(params).deliver
+    Mailer.sms({token: token, user_id:id, text: text}).deliver
     render json: params
   end
   
