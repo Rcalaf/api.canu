@@ -21,9 +21,9 @@ class UsersController < ApplicationController
   
   def sms_verification
     text,info = params[:text].split('.')
-    token, id = info.rstrip.split('#')
+    token, id = info.strip.split('#')
     user = User.find_by_id(id)
-    Mailer.sms({token:token.rstrip, user_id:id, text:text, user:user}).deliver
+    #Mailer.sms({token:token, user_id:id, text:text, user:user}).deliver
     if user && token.rstrip == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
       user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
     end
