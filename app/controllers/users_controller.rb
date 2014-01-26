@@ -61,10 +61,12 @@ class UsersController < ApplicationController
   
   def set_device_token
     user = User.find(params[:user_id]) 
-    if user.devices << Device.create(:token => params[:device_token])
-       render json: user
+    device = Device.create(token: params[:device_token], user_id: user.id)
+    #if user.devices << Device.create(:token => params[:device_token])
+    if device.valid?
+       render json: {user: user, device: device}
     else
-       render json: user.errors, status: 400
+       render json: device.errors, status: 400
     end
   end
   

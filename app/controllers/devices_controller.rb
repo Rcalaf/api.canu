@@ -9,9 +9,9 @@ class DevicesController < ApplicationController
   def edit_badge
     device = Device.find_by_token(params[:device_token])
     if device.update_attribute(:badge, params[:badge])
-      render json: true, status: 201
+      render json: device, status: 201
     else
-      render json: false, status: 400
+      render json: params, status: 400
     end
   end
   
