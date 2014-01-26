@@ -31,6 +31,10 @@ CanuApi::Application.routes.draw do
   match 'session/check-username' => 'session#check_user_name'
   match 'session/login/' => 'session#login', :as => 'login', :via => :post
   match 'session/logout/' => 'session#logout', as: 'logout', :via => :post
+  
+
+  match 'statistics/all' => 'statistics#index', :as => 'all_stats', :via => :get
+
 
     
 #  end
