@@ -66,7 +66,7 @@ class UsersController < ApplicationController
     if device.valid?
        render json: {user: user, device: device}
     else
-       render json: device.errors, status: 400
+       render json: {user: user, device_errors: device.errors}, status: 200
     end
   end
   

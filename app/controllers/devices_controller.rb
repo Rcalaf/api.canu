@@ -11,7 +11,7 @@ class DevicesController < ApplicationController
     if device.update_attribute(:badge, params[:badge])
       render json: device, status: 201
     else
-      render json: params, status: 400
+      render json: device.errors, status: 200
     end
   end
   
