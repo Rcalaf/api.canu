@@ -28,6 +28,8 @@ class User < ActiveRecord::Base
   validates :first_name, :presence => true
   #validates :last_name, :presence => true
 
+  validates :phone_number, :uniqueness => true
+
   #has_many :api_keys, order: "created_at asc", dependent: :destroy
   has_many :devices, dependent: :destroy
   has_many :activities, order: "start asc", dependent: :destroy

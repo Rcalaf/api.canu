@@ -25,6 +25,13 @@ class UsersController < ApplicationController
     user = User.find_by_id(id)
     #Mailer.sms({token:token, user_id:id, text:text, user:user}).deliver
     if user && token.rstrip == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
+
+      # Disable phone_verified to users when theys have this phone number
+      usersWithSamePhoneNumber = User.find_by_phone_number("+"+params[:msisdn])
+      usersWithSamePhoneNumber do |userWithSamePhoneNumber|
+        userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
+      end
+      
       user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
     end
     render json: params
