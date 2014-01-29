@@ -41,7 +41,7 @@ class User < ActiveRecord::Base
                           order: "start asc"
   has_many :messages, order: "created_at asc", dependent: :destroy
 
-  belong_to :ghostuser
+  belongs_to :ghostuser
                           
    scope :in_range, (lambda do |latitude,longitude|  
           latitude_range_up = latitude + Activity::RANGE

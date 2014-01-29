@@ -27,12 +27,44 @@ class UsersController < ApplicationController
     if user && token.rstrip == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
 
       # Disable phone_verified to users when theys have this phone number
-      usersWithSamePhoneNumber = User.find_by_phone_number("+"+params[:msisdn])
-      usersWithSamePhoneNumber do |userWithSamePhoneNumber|
+      usersWithSamePhoneNumbers = User.where('phone_number = ?',"+"+params[:msisdn])
+      usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
+        userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
+      end
+
+      user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
+
+      ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
+
+      if ghostuser
+        user.ghostuser = ghostuser
+        user.save
+        ghostuser.update_attributes(isLinked: true)
+      end
+      
+    end
+    render json: params
+  end
+
+  def sms_verification_dev
+    user = User.find_by_id(params[:user_id])
+    if user
+      # Disable phone_verified to users when theys have this phone number
+      usersWithSamePhoneNumbers = User.where('phone_number = ?',params[:phone_number])
+      usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
         userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
       end
       
-      user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
+      user.update_attributes(phone_number:params[:phone_number],phone_verified: true)
+
+      ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
+
+      if ghostuser
+        user.ghostuser = ghostuser
+        user.save
+        ghostuser.update_attributes(isLinked: true)
+      end
+
     end
     render json: params
   end
