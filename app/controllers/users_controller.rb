@@ -75,7 +75,21 @@ class UsersController < ApplicationController
   end
 
   def phonebook
-    
+
+    allUsers = Array.new
+
+    params[:phone_numbers].each do |phone_number|
+
+      user = User.find_by_phone_number(phone_number)
+
+      if user
+        allUsers << user
+      end
+
+    end
+
+    render json: allUsers
+
   end
   
   def create

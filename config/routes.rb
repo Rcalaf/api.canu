@@ -6,7 +6,7 @@ CanuApi::Application.routes.draw do
   match 'users/email-verification/:token' => 'users#mail_verification', :as => 'mail_verification', :via => :get
   match 'users/sms-verification' => 'users#sms_verification', :as => 'sms_verification'
   match 'users/sms-verification-dev' => 'users#sms_verification_dev', :as => 'sms_verification_dev', :via => :post
-  match 'users/phonebook' => 'users#phonebook', :as => 'phonebook', :via => :post
+  match 'users/search/phonebook' => 'users#phonebook', :as => 'phonebook', :via => :post
   
   resources :users 
 
