@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140129145652) do
+ActiveRecord::Schema.define(:version => 20140131085747) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
@@ -70,6 +70,21 @@ ActiveRecord::Schema.define(:version => 20140129145652) do
     t.boolean  "isLinked"
     t.datetime "created_at",   :null => false
     t.datetime "updated_at",   :null => false
+  end
+
+  create_table "invitation_lists", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "activity_id"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "invitation_lists", ["activity_id"], :name => "index_invitation_lists_on_activity_id"
+  add_index "invitation_lists", ["user_id"], :name => "index_invitation_lists_on_user_id"
+
+  create_table "invitation_lists_users", :id => false, :force => true do |t|
+    t.integer "invitation_list_id"
+    t.integer "user_id"
   end
 
   create_table "messages", :force => true do |t|

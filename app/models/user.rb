@@ -42,6 +42,15 @@ class User < ActiveRecord::Base
   has_many :messages, order: "created_at asc", dependent: :destroy
 
   belongs_to :ghostuser
+
+  has_many :invitation_lists
+
+  has_and_belongs_to_many :schedule,
+                          class_name: "InvitationList",
+                          join_table: "invitation_lists_users", 
+                          association_foreign_key: "invitation_list", 
+                          foreign_key: "user_id",
+                          order: "start asc"
                           
    scope :in_range, (lambda do |latitude,longitude|  
           latitude_range_up = latitude + Activity::RANGE
