@@ -2,7 +2,7 @@ class Activity < ActiveRecord::Base
   #0.01	--> 1.1132 km * 30 =  33.396 km
   RANGE = (100*0.01)
   
-  attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :image
+  attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude
   before_save :set_end_date
   before_update :send_edited_notification
   after_create :send_created_notification
@@ -35,12 +35,6 @@ class Activity < ActiveRecord::Base
                           foreign_key: "activity_id"
   
   has_many :messages, order: "created_at asc", dependent: :destroy
-  
-  has_attached_file :image, 
-                     #:styles => { :small => "265x"},
-                     :url  => "/system/:id/:class/:basename.:extension",
-                     :path => ":rails_root/public/system/:id/:class/:basename.:extension",
-                     :convert_options => {:all => ["-strip", "-colorspace RGB"]}
 
   has_many :invitation_lists
   

@@ -16,7 +16,7 @@ class ActivitiesController < ApplicationController
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
-                longitude: params[:longitude], image: params[:image]}
+                longitude: params[:longitude]}
     activity = Activity.create(activity)
     if activity.valid?
       if activity.user.schedule << activity
@@ -34,7 +34,7 @@ class ActivitiesController < ApplicationController
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
-                longitude: params[:longitude], image: params[:image]}
+                longitude: params[:longitude]}
     activity = Activity.find(params[:activity_id])            
     if activity.update_attributes(activity_params)
       render json: activity

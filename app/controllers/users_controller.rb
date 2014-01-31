@@ -6,8 +6,12 @@ class UsersController < ApplicationController
   end
   
   def activities
-    user = User.find(params[:user_id])
-    render json: user.schedule.active(Time.zone.now)
+    if params[:type] == "profile"
+      user = User.find(params[:user_id])
+      render json: user.schedule.active(Time.zone.now)
+    elsif params[:type] == "tribes"
+      user = User.find(params[:user_id])
+    end
   end
   
   def mail_verification

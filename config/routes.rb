@@ -10,7 +10,8 @@ CanuApi::Application.routes.draw do
   
   resources :users 
 
-  match 'users/:user_id/activities/' => 'users#activities', :via => :get
+  match 'users/:user_id/activities/' => 'users#activities', :type => 'profile', :via => :get
+  match 'users/:user_id/activities/tribes/' => 'users#activities', :type => 'tribes', :via => :get
   match 'users/:user_id/activities/' => 'activities#create', :via => :post
   match 'users/:user_id/profile-image' => 'users#update_profile_pic', :via => :put
   match 'users/:user_id/device_token' => 'users#set_device_token', :via => :post
