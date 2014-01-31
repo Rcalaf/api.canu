@@ -1,2 +1,3 @@
 class InvitationListController < ApplicationController
+	
 end

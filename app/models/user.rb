@@ -45,7 +45,7 @@ class User < ActiveRecord::Base
 
   has_many :invitation_lists
 
-  has_and_belongs_to_many :schedule,
+  has_and_belongs_to_many :schedule_invitation,
                           class_name: "InvitationList",
                           join_table: "invitation_lists_users", 
                           association_foreign_key: "invitation_list", 
@@ -59,6 +59,8 @@ class User < ActiveRecord::Base
           longitude_range_down = longitude - Activity::RANGE   
           where('latitude < ? AND latitude > ? AND longitude < ? AND longitude > ?',latitude_range_up,latitude_range_down,longitude_range_up,longitude_range_down) 
           end)
+
+   scope :privacy_location, lambda{ |private_location| where('private_location = ?', private_location) }
   
   def proxy_password
     @proxy_password

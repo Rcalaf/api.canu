@@ -4,9 +4,9 @@ class ActivitiesController < ApplicationController
   
   def index
     if (params[:latitude] && params[:longitude])
-      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
+      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(false)
     else
-      render json: Activity.active(Time.zone.now)
+      render json: Activity.active(Time.zone.now).private_location(false)
     end
   end
   

@@ -22,6 +22,8 @@ class Activity < ActiveRecord::Base
   scope :in_range_2, select('*')
   
   scope :to_be_remind, lambda{ |time| where('start <= ? && end_date > ?', time + 30*60, time) }
+
+  scope :privacy_location, lambda{ |private_location| where('private_location = ?', private_location) }
   
   belongs_to :user 
   has_many :activity_notifications, dependent: :destroy
