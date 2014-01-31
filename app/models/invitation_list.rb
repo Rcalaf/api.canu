@@ -9,6 +9,6 @@ class InvitationList < ActiveRecord::Base
                           class_name: "User",
                           join_table: "invitation_lists_users", 
                           association_foreign_key: "user_id", 
-                          foreign_key: "invitation_list"
+                          foreign_key: "invitation_list_id"
 
 end

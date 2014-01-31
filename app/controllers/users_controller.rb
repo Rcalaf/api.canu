@@ -11,6 +11,14 @@ class UsersController < ApplicationController
       render json: user.schedule.active(Time.zone.now)
     elsif params[:type] == "tribes"
       user = User.find(params[:user_id])
+      allActivities = Array.new
+      user.schedule_invitation.each do |invitationList|
+        act = Activity.find_by_id(invitationList.activity_id)
+        if act.end_date > Time.zone.now
+          allActivities << act
+        end
+      end
+      render json: allActivities
     end
   end
   

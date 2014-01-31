@@ -2,7 +2,7 @@ class Activity < ActiveRecord::Base
   #0.01	--> 1.1132 km * 30 =  33.396 km
   RANGE = (100*0.01)
   
-  attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude
+  attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :private_location
   before_save :set_end_date
   before_update :send_edited_notification
   after_create :send_created_notification

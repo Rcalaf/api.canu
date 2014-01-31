@@ -16,11 +16,35 @@ class ActivitiesController < ApplicationController
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
-                longitude: params[:longitude]}
+                longitude: params[:longitude], private_location: params[:private_location]}
     activity = Activity.create(activity)
     if activity.valid?
       if activity.user.schedule << activity
         #activity.user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
+
+        if params[:guests].count != 0
+          invitationList = InvitationList.new
+
+          invitationList.user = activity.user
+          invitationList.activity = activity
+
+          params[:guests].each do |phone_number|
+
+            user = User.find_by_phone_number(phone_number)
+
+            if user
+              invitationList.attendees_invitation << user
+              puts "Add User"
+            end
+
+          end
+
+          invitationList.save
+
+        end
+
+        puts "Test 3"
+
       end
       render json: activity, status: 201
     else
