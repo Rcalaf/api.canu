@@ -102,8 +102,28 @@ class ActivitiesController < ApplicationController
   end
   
   def attendees
-    activity = Activity.find(params[:activity_id])
-    render json: activity.attendees
+    user = User.find_by_id(params[:user_id])
+    if user
+      activity = Activity.find(params[:activity_id])
+      invitationList = InvitationList.where('activity_id = ? AND user_id = ?',params[:activity_id],user.id).first
+      if invitationList
+        render json: {
+          attendees: activity.attendees, 
+          invitation:{
+            users: invitationList.attendees_invitation,
+            ghostuser: invitationList.attendees_invitation_ghostusers
+          }
+        }
+      else
+        render json: {
+          attendees: activity.attendees
+        }
+      end
+    else
+      activity = Activity.find(params[:activity_id])
+      render json: activity.attendees
+    end
+    
   end
   
   def destroy

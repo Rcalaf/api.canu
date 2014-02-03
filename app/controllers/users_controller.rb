@@ -18,7 +18,8 @@ class UsersController < ApplicationController
           allActivities << act
         end
       end
-      render json: allActivities
+      allActivitiesSorted = allActivities.sort { |a,b| a.start <=> b.start }
+      render json: allActivitiesSorted
     end
   end
   

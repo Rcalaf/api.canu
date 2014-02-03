@@ -2,7 +2,6 @@ CanuApi::Application.routes.draw do
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
-
   match 'users/email-verification/:token' => 'users#mail_verification', :as => 'mail_verification', :via => :get
   match 'users/sms-verification' => 'users#sms_verification', :as => 'sms_verification'
   match 'users/sms-verification-dev' => 'users#sms_verification_dev', :as => 'sms_verification_dev', :via => :post
@@ -20,7 +19,7 @@ CanuApi::Application.routes.draw do
   
   resources :activities
   
-  match 'activities/:activity_id/attendees' => 'activities#attendees', :via => :get
+  match 'activities/:activity_id/attendees/' => 'activities#attendees', :via => :get
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#add_to_schedule', :via => :post
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#remove_from_schedule', :via => :delete
   
