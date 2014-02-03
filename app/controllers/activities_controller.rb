@@ -48,6 +48,7 @@ class ActivitiesController < ApplicationController
         end
 
       end
+      Activity.send_created_notification(activity)
       render json: activity, status: 201
     else
       render json: activity.errors, status: 400
