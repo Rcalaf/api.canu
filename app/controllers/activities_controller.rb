@@ -20,7 +20,6 @@ class ActivitiesController < ApplicationController
     activity = Activity.create(activity)
     if activity.valid?
       if activity.user.schedule << activity
-        #activity.user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
 
         if params[:guests].count != 0
           invitationList = InvitationList.new
@@ -34,7 +33,12 @@ class ActivitiesController < ApplicationController
 
             if user
               invitationList.attendees_invitation << user
-              puts "Add User"
+            else
+              ghostuser = Ghostuser.find_by_phone_number(phone_number)
+              if !ghostuser
+                ghostuser = Ghostuser.create(isLinked: false, phone_number: phone_number)
+              end
+              invitationList.attendees_invitation_ghostusers << ghostuser
             end
 
           end
@@ -42,8 +46,6 @@ class ActivitiesController < ApplicationController
           invitationList.save
 
         end
-
-        puts "Test 3"
 
       end
       render json: activity, status: 201

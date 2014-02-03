@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140131092109) do
+ActiveRecord::Schema.define(:version => 20140203084205) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
@@ -82,6 +82,11 @@ ActiveRecord::Schema.define(:version => 20140131092109) do
 
   add_index "invitation_lists", ["activity_id"], :name => "index_invitation_lists_on_activity_id"
   add_index "invitation_lists", ["user_id"], :name => "index_invitation_lists_on_user_id"
+
+  create_table "invitation_lists_ghostusers", :id => false, :force => true do |t|
+    t.integer "invitation_list_id"
+    t.integer "ghostuser_id"
+  end
 
   create_table "invitation_lists_users", :id => false, :force => true do |t|
     t.integer "invitation_list_id"
