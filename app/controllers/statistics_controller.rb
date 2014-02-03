@@ -5,3 +5,4 @@ class StatisticsController < ApplicationController
     render json: {user: user, activity: activity}, status: 200
   end
 end
+
