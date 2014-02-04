@@ -107,10 +107,28 @@ class ActivitiesController < ApplicationController
       activity = Activity.find(params[:activity_id])
       invitationList = InvitationList.where('activity_id = ? AND user_id = ?',params[:activity_id],user.id).first
       if invitationList
+
+        #If user already on Attendees, disappear this one to the invitation list
+
+        arrayUserInvited = Array.new()
+
+        invitationList.attendees_invitation.each do |userInvited|
+          userIsAttendees = false
+          activity.attendees.each do |userAttendee|
+            if userAttendee.id == userInvited.id
+              userIsAttendees = true
+            end
+          end
+
+          if !userIsAttendees
+            arrayUserInvited << userInvited
+          end
+        end
+
         render json: {
           attendees: activity.attendees, 
           invitation:{
-            users: invitationList.attendees_invitation,
+            users: arrayUserInvited,
             ghostuser: invitationList.attendees_invitation_ghostusers
           }
         }
