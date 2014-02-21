@@ -71,6 +71,7 @@ class ActivitiesController < ApplicationController
   end
   
   def add_to_schedule
+    puts "add_to_schedule_test1"
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     if user.schedule << activity
@@ -84,6 +85,7 @@ class ActivitiesController < ApplicationController
   end
 
   def remove_from_schedule
+    puts "remove_to_schedule_test1"
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     if user.schedule.delete activity
