@@ -21,7 +21,7 @@ class ActivitiesController < ApplicationController
     if activity.valid?
       if activity.user.schedule << activity
 
-        if params[:guests].count != 0
+        if params[:guests]
           invitationList = InvitationList.new
 
           invitationList.user = activity.user
