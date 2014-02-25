@@ -23,7 +23,13 @@ class Activity < ActiveRecord::Base
   
   scope :to_be_remind, lambda{ |time| where('start <= ? && end_date > ?', time + 30*60, time) }
 
-  scope :privacy_location, lambda{ |private_location| where('private_location = ?', private_location) }
+  scope :privacy_location, lambda{ |private_location| 
+    if private_location
+      where('private_location = ?', private_location) 
+    else
+      where('private_location = ? OR private_location is NULL', private_location)
+    end
+  }
   
   belongs_to :user 
   has_many :activity_notifications, dependent: :destroy
@@ -36,7 +42,7 @@ class Activity < ActiveRecord::Base
   
   has_many :messages, order: "created_at asc", dependent: :destroy
 
-  has_many :invitation_lists
+  has_many :invitation_lists, dependent: :destroy
   
   validates :title, :presence => true  
 

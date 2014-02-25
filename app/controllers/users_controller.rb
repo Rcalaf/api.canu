@@ -14,8 +14,23 @@ class UsersController < ApplicationController
       allActivities = Array.new
       user.schedule_invitation.each do |invitationList|
         act = Activity.find_by_id(invitationList.activity_id)
-        if act.end_date > Time.zone.now
+        if act
+          if act.end_date > Time.zone.now
+            allActivities << act
+          end
+        end
+      end
+      user.activities.each do |act|
+        if act.user_id == user.id && act.end_date > Time.zone.now && act.private_location
           allActivities << act
+        end
+      end
+      user.ghostuser.schedule_invitation_ghostusers.each do |invitationListGhost|
+        act = Activity.find_by_id(invitationListGhost.activity_id)
+        if act
+          if act.end_date > Time.zone.now
+            allActivities << act
+          end
         end
       end
       allActivitiesSorted = allActivities.sort { |a,b| a.start <=> b.start }

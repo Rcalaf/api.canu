@@ -6,7 +6,7 @@ class ActivitiesController < ApplicationController
     if (params[:latitude] && params[:longitude])
       render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(false)
     else
-      render json: Activity.active(Time.zone.now).private_location(false)
+      render json: Activity.active(Time.zone.now).privacy_location(false)
     end
   end
   
@@ -71,30 +71,28 @@ class ActivitiesController < ApplicationController
   end
   
   def add_to_schedule
-    puts "add_to_schedule_test1"
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     if user.schedule << activity
       #user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
     end
     if (params[:latitude] && params[:longitude])
-      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
+      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(activity.private_location)
     else
-      render json: Activity.active(Time.zone.now)
+      render json: Activity.active(Time.zone.now).privacy_location(activity.private_location)
     end
   end
 
   def remove_from_schedule
-    puts "remove_to_schedule_test1"
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     if user.schedule.delete activity
       #user.devices.each {|device| device.activity_notifications.find_by_activity_id(activity.id).delete if device.activity_notifications.find_by_activity_id(activity.id)}
     end
     if (params[:latitude] && params[:longitude])
-      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
+      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(activity.private_location)
     else
-      render json: Activity.active(Time.zone.now)
+      render json: Activity.active(Time.zone.now).privacy_location(activity.private_location)
     end
   end
   
