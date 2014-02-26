@@ -2,13 +2,15 @@ CanuApi::Application.routes.draw do
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
-
   match 'users/email-verification/:token' => 'users#mail_verification', :as => 'mail_verification', :via => :get
   match 'users/sms-verification' => 'users#sms_verification', :as => 'sms_verification'
+  match 'users/sms-verification-dev' => 'users#sms_verification_dev', :as => 'sms_verification_dev', :via => :post
+  match 'users/search/phonebook' => 'users#phonebook', :as => 'phonebook', :via => :post
   
   resources :users 
 
-  match 'users/:user_id/activities/' => 'users#activities', :via => :get
+  match 'users/:user_id/activities/' => 'users#activities', :type => 'profile', :via => :get
+  match 'users/:user_id/activities/tribes/' => 'users#activities', :type => 'tribes', :via => :get
   match 'users/:user_id/activities/' => 'activities#create', :via => :post
   match 'users/:user_id/profile-image' => 'users#update_profile_pic', :via => :put
   match 'users/:user_id/device_token' => 'users#set_device_token', :via => :post
@@ -17,7 +19,7 @@ CanuApi::Application.routes.draw do
   
   resources :activities
   
-  match 'activities/:activity_id/attendees' => 'activities#attendees', :via => :get
+  match 'activities/:activity_id/attendees/' => 'activities#attendees', :via => :get
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#add_to_schedule', :via => :post
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#remove_from_schedule', :via => :delete
   

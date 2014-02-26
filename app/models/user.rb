@@ -28,6 +28,8 @@ class User < ActiveRecord::Base
   validates :first_name, :presence => true
   #validates :last_name, :presence => true
 
+  # validates :phone_number, :uniqueness => true
+
   #has_many :api_keys, order: "created_at asc", dependent: :destroy
   has_many :devices, dependent: :destroy
   has_many :activities, order: "start asc", dependent: :destroy
@@ -38,6 +40,16 @@ class User < ActiveRecord::Base
                           foreign_key: "user_id",
                           order: "start asc"
   has_many :messages, order: "created_at asc", dependent: :destroy
+
+  belongs_to :ghostuser
+
+  has_many :invitation_lists
+
+  has_and_belongs_to_many :schedule_invitation,
+                          class_name: "InvitationList",
+                          join_table: "invitation_lists_users", 
+                          association_foreign_key: "invitation_list_id", 
+                          foreign_key: "user_id"
                           
    scope :in_range, (lambda do |latitude,longitude|  
           latitude_range_up = latitude + Activity::RANGE
@@ -46,6 +58,8 @@ class User < ActiveRecord::Base
           longitude_range_down = longitude - Activity::RANGE   
           where('latitude < ? AND latitude > ? AND longitude < ? AND longitude > ?',latitude_range_up,latitude_range_down,longitude_range_up,longitude_range_down) 
           end)
+
+   scope :privacy_location, lambda{ |private_location| where('private_location = ?', private_location) }
   
   def proxy_password
     @proxy_password

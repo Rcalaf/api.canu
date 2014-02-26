@@ -11,14 +11,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140115112811) do
+ActiveRecord::Schema.define(:version => 20140203084205) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
     t.text     "description"
     t.datetime "start"
     t.time     "length"
-    t.datetime "end_date"
     t.integer  "user_id"
     t.float    "latitude"
     t.float    "longitude"
@@ -30,6 +29,8 @@ ActiveRecord::Schema.define(:version => 20140115112811) do
     t.string   "image_content_type"
     t.integer  "image_file_size"
     t.datetime "image_updated_at"
+    t.datetime "end_date"
+    t.boolean  "private_location",   :default => false
   end
 
   create_table "activities_users", :id => false, :force => true do |t|
@@ -65,6 +66,33 @@ ActiveRecord::Schema.define(:version => 20140115112811) do
     t.integer  "badge"
   end
 
+  create_table "ghostusers", :force => true do |t|
+    t.string   "phone_number"
+    t.boolean  "isLinked"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  create_table "invitation_lists", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "activity_id"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "invitation_lists", ["activity_id"], :name => "index_invitation_lists_on_activity_id"
+  add_index "invitation_lists", ["user_id"], :name => "index_invitation_lists_on_user_id"
+
+  create_table "invitation_lists_ghostusers", :id => false, :force => true do |t|
+    t.integer "invitation_list_id"
+    t.integer "ghostuser_id"
+  end
+
+  create_table "invitation_lists_users", :id => false, :force => true do |t|
+    t.integer "invitation_list_id"
+    t.integer "user_id"
+  end
+
   create_table "messages", :force => true do |t|
     t.text     "text"
     t.integer  "activity_id"
@@ -92,6 +120,7 @@ ActiveRecord::Schema.define(:version => 20140115112811) do
     t.datetime "updated_at"
     t.string   "phone_number"
     t.boolean  "phone_verified"
+    t.integer  "ghostuser_id"
   end
 
 end

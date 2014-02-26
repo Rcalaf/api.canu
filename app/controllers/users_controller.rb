@@ -6,8 +6,38 @@ class UsersController < ApplicationController
   end
   
   def activities
-    user = User.find(params[:user_id])
-    render json: user.schedule.active(Time.zone.now)
+    if params[:type] == "profile"
+      user = User.find(params[:user_id])
+      render json: user.schedule.active(Time.zone.now)
+    elsif params[:type] == "tribes"
+      user = User.find(params[:user_id])
+      allActivities = Array.new
+      user.schedule_invitation.each do |invitationList|
+        act = Activity.find_by_id(invitationList.activity_id)
+        if act
+          if act.end_date > Time.zone.now
+            allActivities << act
+          end
+        end
+      end
+      user.activities.each do |act|
+        if act.user_id == user.id && act.end_date > Time.zone.now && act.private_location
+          allActivities << act
+        end
+      end
+      if user.ghostuser
+        user.ghostuser.schedule_invitation_ghostusers.each do |invitationListGhost|
+          act = Activity.find_by_id(invitationListGhost.activity_id)
+          if act
+            if act.end_date > Time.zone.now
+              allActivities << act
+            end
+          end
+        end
+      end
+      allActivitiesSorted = allActivities.sort { |a,b| a.start <=> b.start }
+      render json: allActivitiesSorted
+    end
   end
   
   def mail_verification
@@ -25,9 +55,71 @@ class UsersController < ApplicationController
     user = User.find_by_id(id)
     #Mailer.sms({token:token, user_id:id, text:text, user:user}).deliver
     if user && token.rstrip == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
+
+      # Disable phone_verified to users when theys have this phone number
+      usersWithSamePhoneNumbers = User.where('phone_number = ?',"+"+params[:msisdn])
+      usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
+        userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
+      end
+
       user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
+
+      ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
+
+      if ghostuser
+        user.ghostuser = ghostuser
+        user.save
+        ghostuser.update_attributes(isLinked: true)
+      end
+
     end
     render json: params
+  end
+
+  def sms_verification_dev
+
+    if params[:key] == "097c4qw87ryn02tnc2"
+      
+      user = User.find_by_id(params[:user_id])
+      if user
+        # Disable phone_verified to users when theys have this phone number
+        usersWithSamePhoneNumbers = User.where('phone_number = ?',params[:phone_number])
+        usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
+          userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
+        end
+        
+        user.update_attributes(phone_number:params[:phone_number],phone_verified: true)
+
+        ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
+
+        if ghostuser
+          user.ghostuser = ghostuser
+          user.save
+          ghostuser.update_attributes(isLinked: true)
+        end
+
+      end
+
+    end
+    render json: params
+  end
+
+  def phonebook
+
+    allUsers = Array.new
+
+    params[:phone_numbers].each do |phone_number|
+
+      user = User.find_by_phone_number(phone_number)
+
+      if user
+        allUsers << user
+      end
+
+    end
+
+    render json: allUsers
+
   end
   
   def create
@@ -61,6 +153,14 @@ class UsersController < ApplicationController
   
   def set_device_token
     user = User.find(params[:user_id]) 
+    # if this device token is saved for another one user / Delete this token
+    allSameDevices = Device.where('token = ?',params[:device_token])
+    allSameDevices.each do |sameDevice|
+      if sameDevice.user_id != user.id
+        sameDevice.destroy()
+      end
+    end
+
     device = Device.create(token: params[:device_token], user_id: user.id)
     #if user.devices << Device.create(:token => params[:device_token])
     if device.valid?

@@ -4,9 +4,9 @@ class ActivitiesController < ApplicationController
   
   def index
     if (params[:latitude] && params[:longitude])
-      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
+      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(false)
     else
-      render json: Activity.active(Time.zone.now)
+      render json: Activity.active(Time.zone.now).privacy_location(false)
     end
   end
   
@@ -16,12 +16,39 @@ class ActivitiesController < ApplicationController
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
-                longitude: params[:longitude], image: params[:image]}
+                longitude: params[:longitude], private_location: params[:private_location]}
     activity = Activity.create(activity)
     if activity.valid?
       if activity.user.schedule << activity
-        #activity.user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
+
+        if params[:guests]
+          invitationList = InvitationList.new
+
+          invitationList.user = activity.user
+          invitationList.activity = activity
+
+          params[:guests].each do |phone_number|
+
+            user = User.find_by_phone_number(phone_number)
+
+            if user
+              invitationList.attendees_invitation << user
+            else
+              ghostuser = Ghostuser.find_by_phone_number(phone_number)
+              if !ghostuser
+                ghostuser = Ghostuser.create(isLinked: false, phone_number: phone_number)
+              end
+              invitationList.attendees_invitation_ghostusers << ghostuser
+            end
+
+          end
+
+          invitationList.save
+
+        end
+
       end
+      Activity.send_created_notification(activity)
       render json: activity, status: 201
     else
       render json: activity.errors, status: 400
@@ -34,7 +61,7 @@ class ActivitiesController < ApplicationController
                 user_id: params[:user_id], city: params[:city],
                 street: params[:street], zip_code: params[:zip],
                 country: params[:country], latitude: params[:latitude],
-                longitude: params[:longitude], image: params[:image]}
+                longitude: params[:longitude]}
     activity = Activity.find(params[:activity_id])            
     if activity.update_attributes(activity_params)
       render json: activity
@@ -50,9 +77,9 @@ class ActivitiesController < ApplicationController
       #user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
     end
     if (params[:latitude] && params[:longitude])
-      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
+      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(activity.private_location)
     else
-      render json: Activity.active(Time.zone.now)
+      render json: Activity.active(Time.zone.now).privacy_location(activity.private_location)
     end
   end
 
@@ -63,9 +90,9 @@ class ActivitiesController < ApplicationController
       #user.devices.each {|device| device.activity_notifications.find_by_activity_id(activity.id).delete if device.activity_notifications.find_by_activity_id(activity.id)}
     end
     if (params[:latitude] && params[:longitude])
-      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f)
+      render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(activity.private_location)
     else
-      render json: Activity.active(Time.zone.now)
+      render json: Activity.active(Time.zone.now).privacy_location(activity.private_location)
     end
   end
   
@@ -75,8 +102,46 @@ class ActivitiesController < ApplicationController
   end
   
   def attendees
-    activity = Activity.find(params[:activity_id])
-    render json: activity.attendees
+    user = User.find_by_id(params[:user_id])
+    if user
+      activity = Activity.find(params[:activity_id])
+      invitationList = InvitationList.where('activity_id = ? AND user_id = ?',params[:activity_id],user.id).first
+      if invitationList
+
+        #If user already on Attendees, disappear this one to the invitation list
+
+        arrayUserInvited = Array.new()
+
+        invitationList.attendees_invitation.each do |userInvited|
+          userIsAttendees = false
+          activity.attendees.each do |userAttendee|
+            if userAttendee.id == userInvited.id
+              userIsAttendees = true
+            end
+          end
+
+          if !userIsAttendees
+            arrayUserInvited << userInvited
+          end
+        end
+
+        render json: {
+          attendees: activity.attendees, 
+          invitation:{
+            users: arrayUserInvited,
+            ghostuser: invitationList.attendees_invitation_ghostusers
+          }
+        }
+      else
+        render json: {
+          attendees: activity.attendees
+        }
+      end
+    else
+      activity = Activity.find(params[:activity_id])
+      render json: activity.attendees
+    end
+    
   end
   
   def destroy

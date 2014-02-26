@@ -2,10 +2,10 @@ class Activity < ActiveRecord::Base
   #0.01	--> 1.1132 km * 30 =  33.396 km
   RANGE = (100*0.01)
   
-  attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :image
+  attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :private_location
   before_save :set_end_date
   before_update :send_edited_notification
-  after_create :send_created_notification
+  # after_create :send_created_notification
   before_destroy :send_deleted_notificaiton
 
   default_scope order 'start ASC'
@@ -22,6 +22,14 @@ class Activity < ActiveRecord::Base
   scope :in_range_2, select('*')
   
   scope :to_be_remind, lambda{ |time| where('start <= ? && end_date > ?', time + 30*60, time) }
+
+  scope :privacy_location, lambda{ |private_location| 
+    if private_location
+      where('private_location = ?', private_location) 
+    else
+      where('private_location = ? OR private_location is NULL', private_location)
+    end
+  }
   
   belongs_to :user 
   has_many :activity_notifications, dependent: :destroy
@@ -33,14 +41,44 @@ class Activity < ActiveRecord::Base
                           foreign_key: "activity_id"
   
   has_many :messages, order: "created_at asc", dependent: :destroy
+
+  has_many :invitation_lists, dependent: :destroy
   
-  has_attached_file :image, 
-                     #:styles => { :small => "265x"},
-                     :url  => "/system/:id/:class/:basename.:extension",
-                     :path => ":rails_root/public/system/:id/:class/:basename.:extension",
-                     :convert_options => {:all => ["-strip", "-colorspace RGB"]}
-  
-  validates :title, :presence => true         
+  validates :title, :presence => true  
+
+  def self.send_created_notification(activity)
+    notifications = []
+    # if you are around the event
+    if !activity.private_location
+      User.in_range(activity.latitude,activity.longitude).each do |user|
+        activity.invitation_lists.each do |invitation_list|
+          userAlreadyInvited = false
+          invitation_list.attendees_invitation.each do |userinvit|
+            if user != userinvit
+              userAlreadyInvited = true
+            end
+          end
+          if !userAlreadyInvited
+            user.devices.each do |device| 
+              device.update_attribute(:badge,device.badge.to_i + 1)
+              notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{activity.title}\" has been created on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity'}}})
+            end
+          end
+        end
+      end
+    end
+    
+    #if you are invited
+    activity.invitation_lists.each do |invitation_list|
+      invitation_list.attendees_invitation.each do |user|
+        user.devices.each do |device| 
+          device.update_attribute(:badge,device.badge.to_i + 1)
+          notifications << APNS::Notification.new(device.token,{:alert => "You are invited to \"#{activity.title}\" on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity'}}})
+        end
+      end
+    end
+    APNS.send_notifications(notifications) unless notifications.empty?
+  end       
   
   private 
   
@@ -50,17 +88,6 @@ class Activity < ActiveRecord::Base
       user.devices.each do |device| 
          device.update_attribute(:badge,device.badge.to_i + 1)
          notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you are attending has been updated!",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edit activity'}}})
-      end
-    end
-    APNS.send_notifications(notifications) unless notifications.empty?
-  end
-  
-  def send_created_notification
-    notifications = []
-    User.in_range(self.latitude,self.longitude).each do |user|
-      user.devices.each do |device| 
-         device.update_attribute(:badge,device.badge.to_i + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" has been created on #{self.start.strftime('%b %d')} at #{self.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'create activity'}}})
       end
     end
     APNS.send_notifications(notifications) unless notifications.empty?
