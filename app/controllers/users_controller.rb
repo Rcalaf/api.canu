@@ -25,11 +25,13 @@ class UsersController < ApplicationController
           allActivities << act
         end
       end
-      user.ghostuser.schedule_invitation_ghostusers.each do |invitationListGhost|
-        act = Activity.find_by_id(invitationListGhost.activity_id)
-        if act
-          if act.end_date > Time.zone.now
-            allActivities << act
+      if user.ghostuser
+        user.ghostuser.schedule_invitation_ghostusers.each do |invitationListGhost|
+          act = Activity.find_by_id(invitationListGhost.activity_id)
+          if act
+            if act.end_date > Time.zone.now
+              allActivities << act
+            end
           end
         end
       end
