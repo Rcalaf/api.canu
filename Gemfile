@@ -23,7 +23,7 @@ gem 'whenever', :require => false
 # gem 'unicorn'
 
 # Deploy with Capistrano
-# gem 'capistrano', :group => :development
+gem 'capistrano', '2.15.5'
 
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'

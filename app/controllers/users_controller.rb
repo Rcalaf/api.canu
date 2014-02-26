@@ -64,7 +64,7 @@ class UsersController < ApplicationController
 
       user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
 
-      ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
+      ghostuser = Ghostuser.find_by_phone_number("+"+params[:msisdn])
 
       if ghostuser
         user.ghostuser = ghostuser
