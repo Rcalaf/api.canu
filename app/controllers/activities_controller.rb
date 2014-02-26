@@ -111,7 +111,6 @@ class ActivitiesController < ApplicationController
         #If user already on Attendees, disappear this one to the invitation list
 
         arrayUserInvited = Array.new()
-
         invitationList.attendees_invitation.each do |userInvited|
           userIsAttendees = false
           activity.attendees.each do |userAttendee|
@@ -125,11 +124,34 @@ class ActivitiesController < ApplicationController
           end
         end
 
+        arrayGhostUser = Array.new()
+        invitationList.attendees_invitation_ghostusers.each do |ghostUser|
+          if ghostUser.isLinked
+            
+            userInvited = User.find_by_ghostuser_id(ghostUser.id)
+
+            userIsAttendees = false
+
+            activity.attendees.each do |userAttendee|
+              if userAttendee.id == userInvited.id
+                userIsAttendees = true
+              end
+            end
+
+            if !userIsAttendees
+              arrayUserInvited << userInvited
+            end
+
+          else
+            arrayGhostUser << ghostUser
+          end
+        end
+
         render json: {
           attendees: activity.attendees, 
           invitation:{
             users: arrayUserInvited,
-            ghostuser: invitationList.attendees_invitation_ghostusers
+            ghostuser: arrayGhostUser
           }
         }
       else
