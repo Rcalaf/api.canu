@@ -51,7 +51,6 @@ class CounterController < ApplicationController
         dayStart = 1
 
         (1..3).each do |i|
-          puts dayStart
           count = {available_for: dayStart.days.from_now, unlock: false}
           count = Counter.create(count)
           dayStart = dayStart * 3

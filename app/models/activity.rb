@@ -49,19 +49,26 @@ class Activity < ActiveRecord::Base
   def self.send_created_notification(activity)
     notifications = []
     # if you are around the event
+
     if !activity.private_location
       User.in_range(activity.latitude,activity.longitude).each do |user|
+        puts user
+        userAlreadyInvited = false
         activity.invitation_lists.each do |invitation_list|
-          userAlreadyInvited = false
           invitation_list.attendees_invitation.each do |userinvit|
             if user != userinvit
               userAlreadyInvited = true
             end
           end
-          if !userAlreadyInvited
-            user.devices.each do |device| 
-              device.update_attribute(:badge,device.badge.to_i + 1)
-              notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{activity.title}\" has been created on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity'}}})
+        end
+        if !userAlreadyInvited
+          count = Counter.find_by_user_id(user.id)
+          if count
+            if count.unlock
+              user.devices.each do |device| 
+                device.update_attribute(:badge,device.badge.to_i + 1)
+                notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{activity.title}\" has been created on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity'}}})
+              end
             end
           end
         end
