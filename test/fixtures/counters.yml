@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  user_id: 1
+  available_for: 2014-03-01 12:06:54
+  unlock: 
+
+two:
+  user_id: 1
+  available_for: 2014-03-01 12:06:54
+  unlock: 
