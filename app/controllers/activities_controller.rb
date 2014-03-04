@@ -144,24 +144,38 @@ class ActivitiesController < ApplicationController
             end
 
             if !userIsAttendees
-              arrayUserInvited << userInvited
+             arrayUserInvited << userInvited
             end
 
           else
             arrayGhostUser << ghostUser
           end
         end
-
+        attendees = []
+        activity.attendees.each do |attendee| 
+                  attendees << {id: attendee.id, token: attendee.token, first_name: attendee.first_name, last_name:attendee.last_name, 
+                  email:attendee.email, active:attendee.active, profile_pic: attendee.profile_image.url(:default, timestamp: false),
+                  user_name: attendee.user_name, phone_number: attendee.phone_number, 
+                  phone_verified:attendee.phone_verified }
+        end
+        
         render json: {
-          attendees: activity.attendees, 
+          attendees: attendees, 
           invitation:{
             users: arrayUserInvited,
             ghostuser: arrayGhostUser
           }
         }
       else
+        attendees = []
+        activity.attendees.each do |attendee| 
+                  attendees << {id: attendee.id, token: attendee.token, first_name: attendee.first_name, last_name:attendee.last_name, 
+                  email:attendee.email, active:attendee.active, profile_pic: attendee.profile_image.url(:default, timestamp: false),
+                  user_name: attendee.user_name, phone_number: attendee.phone_number, 
+                  phone_verified:attendee.phone_verified }
+        end
         render json: {
-          attendees: activity.attendees
+          attendees: attendees       
         }
       end
     else
