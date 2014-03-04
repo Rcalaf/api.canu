@@ -153,7 +153,7 @@ class ActivitiesController < ApplicationController
         end
         attendees = []
         activity.attendees.each do |attendee| 
-                  attendees << {id: attendee.id, token: attendee.token, first_name: attendee.first_name, last_name:attendee.last_name, 
+                  attendees << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
                   email:attendee.email, active:attendee.active, profile_pic: attendee.profile_image.url(:default, timestamp: false),
                   user_name: attendee.user_name, phone_number: attendee.phone_number, 
                   phone_verified:attendee.phone_verified }
@@ -161,28 +161,28 @@ class ActivitiesController < ApplicationController
         
         arrayUserInvitedSerilized = []
         arrayUserInvited.each do |attendee| 
-                  arrayUserInvitedSerilized << {id: attendee.id, token: attendee.token, first_name: attendee.first_name, last_name:attendee.last_name, 
+                  arrayUserInvitedSerilized << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
                   email:attendee.email, active:attendee.active, profile_pic: attendee.profile_image.url(:default, timestamp: false),
                   user_name: attendee.user_name, phone_number: attendee.phone_number, 
                   phone_verified:attendee.phone_verified }
         end
-=begin        
-          arrayUserInvitedSerilized = []
-          arrayUserInvited.each do |attendee| 
-                    attendees << {id: attendee.id, phone_number: attendee.phone_number, isLinked: attendee.phone_number}
+       
+          arrayGhostUserSerilized = []
+          arrayGhostUser.each do |ghost| 
+                    arrayGhostUserSerilized << {id: ghost.id, phone_number: ghost.phone_number, isLinked: ghost.phone_number}
           end
-=end
+
         render json: {
           attendees: attendees, 
           invitation:{
             users: arrayUserInvitedSerilized,
-            ghostuser: arrayGhostUser
+            ghostuser: arrayGhostUserSerilized
           }
         }
       else
         attendees = []
         activity.attendees.each do |attendee| 
-                  attendees << {id: attendee.id, token: attendee.token, first_name: attendee.first_name, last_name:attendee.last_name, 
+                  attendees << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
                   email:attendee.email, active:attendee.active, profile_pic: attendee.profile_image.url(:default, timestamp: false),
                   user_name: attendee.user_name, phone_number: attendee.phone_number, 
                   phone_verified:attendee.phone_verified }
