@@ -159,10 +159,23 @@ class ActivitiesController < ApplicationController
                   phone_verified:attendee.phone_verified }
         end
         
+        arrayUserInvitedSerilized = []
+        arrayUserInvited.each do |attendee| 
+                  arrayUserInvitedSerilized << {id: attendee.id, token: attendee.token, first_name: attendee.first_name, last_name:attendee.last_name, 
+                  email:attendee.email, active:attendee.active, profile_pic: attendee.profile_image.url(:default, timestamp: false),
+                  user_name: attendee.user_name, phone_number: attendee.phone_number, 
+                  phone_verified:attendee.phone_verified }
+        end
+=begin        
+          arrayUserInvitedSerilized = []
+          arrayUserInvited.each do |attendee| 
+                    attendees << {id: attendee.id, phone_number: attendee.phone_number, isLinked: attendee.phone_number}
+          end
+=end
         render json: {
           attendees: attendees, 
           invitation:{
-            users: arrayUserInvited,
+            users: arrayUserInvitedSerilized,
             ghostuser: arrayGhostUser
           }
         }
