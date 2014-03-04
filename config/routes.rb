@@ -17,15 +17,20 @@ CanuApi::Application.routes.draw do
   match 'users/:user_id/activities/:activity_id' => 'activities#update', :via => :put
   match 'users/:user_id/activities/:activity_id' => 'activities#destroy', :via => :delete
   
+  
+
+
   resources :activities
   
-  match 'activities/invite/:activity_id' => 'activities#invite', :via => :get
+  
   match 'activities/:activity_id/attendees/' => 'activities#attendees', :via => :get
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#add_to_schedule', :via => :post
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#remove_from_schedule', :via => :delete
   
   match 'activities/:activity_id/chat' => 'messages#messages', :via => :get
   match 'activities/:activity_id/chat' => 'messages#create', :via => :post
+  
+  match 'activities/:activity_id/invite' => 'activities#invite', :via => :get
   
   match 'devices/:device_token/badge' => 'devices#edit_badge', :via => :put
   
