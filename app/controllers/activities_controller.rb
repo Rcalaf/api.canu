@@ -102,7 +102,7 @@ class ActivitiesController < ApplicationController
   end
   
   def invite
-    activity = Activity.find(params[:id])
+    activity = Activity.find(params[:activity_id])
     render json: activity
   end
   
