@@ -1,5 +1,5 @@
 class MessagesController < ApplicationController
-  before_filter :restrict_access
+  before_filter :restrict_access, :only => [:create]
   
   def messages
     @activity = Activity.find(params[:activity_id])
