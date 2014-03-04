@@ -1,5 +1,5 @@
 class ActivitiesController < ApplicationController
-  before_filter :restrict_access, :except => [:index, :show, :attendees]
+  before_filter :restrict_access, :except => [:index, :show, :attendees, :invite]
  
   
   def index
@@ -97,6 +97,11 @@ class ActivitiesController < ApplicationController
   end
   
   def show
+    activity = Activity.find(params[:id])
+    render json: activity
+  end
+  
+  def invite
     activity = Activity.find(params[:id])
     render json: activity
   end

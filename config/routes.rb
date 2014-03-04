@@ -19,6 +19,7 @@ CanuApi::Application.routes.draw do
   
   resources :activities
   
+  match 'activities/invite/:activity_id' => 'activities#invite', :via => :get
   match 'activities/:activity_id/attendees/' => 'activities#attendees', :via => :get
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#add_to_schedule', :via => :post
   match 'activities/:activity_id/users/:user_id/attend' => 'activities#remove_from_schedule', :via => :delete
