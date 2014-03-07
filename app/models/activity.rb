@@ -2,11 +2,13 @@ class Activity < ActiveRecord::Base
   #0.01	--> 1.1132 km * 30 =  33.396 km
   RANGE = (100*0.01)
   
-  attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :private_location
+  attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :private_location, :invitation_token
   before_save :set_end_date
   before_update :send_edited_notification
   # after_create :send_created_notification
   before_destroy :send_deleted_notificaiton
+  before_create :set_invitation_token
+  
 
   default_scope order 'start ASC'
   
@@ -88,6 +90,12 @@ class Activity < ActiveRecord::Base
   end       
   
   private 
+  
+  def set_invitation_token
+    begin 
+      self.invitation_token = SecureRandom.hex(9)
+    end while self.class.exists?(invitation_token: invitation_token)
+  end
   
   def send_edited_notification
     notifications = []
