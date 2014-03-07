@@ -30,7 +30,7 @@ CanuApi::Application.routes.draw do
   match 'activities/:activity_id/chat' => 'messages#messages', :via => :get
   match 'activities/:activity_id/chat' => 'messages#create', :via => :post
   
-  match 'activities/:activity_id/invite' => 'activities#invite', :via => :get
+  match 'activities/:invitation_token/invite' => 'activities#invite', :via => :get
   
   match 'devices/:device_token/badge' => 'devices#edit_badge', :via => :put
   
