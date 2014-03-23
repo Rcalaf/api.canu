@@ -51,28 +51,38 @@ class UsersController < ApplicationController
   
   def sms_verification
     text,info = params[:text].split('.')
-    token, id = info.strip.split('#')
-    user = User.find_by_id(id)
-    #Mailer.sms({token:token, user_id:id, text:text, user:user}).deliver
-    if user && token.rstrip == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
 
-      # Disable phone_verified to users when theys have this phone number
-      usersWithSamePhoneNumbers = User.where('phone_number = ?',"+"+params[:msisdn])
-      usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
-        userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
-      end
+    if info
+      
+      token, id = info.strip.split('#')
+      user = User.find_by_id(id)
+      
+      if user && token.rstrip == Digest::SHA1.hexdigest(user.id.to_s + 'canuGettogether' + user.email)
 
-      user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
+        if user.phone_number != "+"+params[:msisdn]
 
-      ghostuser = Ghostuser.find_by_phone_number("+"+params[:msisdn])
+          # Disable phone_verified to users when theys have this phone number
+          usersWithSamePhoneNumbers = User.where('phone_number = ?',"+"+params[:msisdn])
+          usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
+            userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
+          end
 
-      if ghostuser
-        user.ghostuser = ghostuser
-        user.save
-        ghostuser.update_attributes(isLinked: true)
+          user.update_attributes(phone_number:"+"+params[:msisdn],phone_verified: true)
+
+          ghostuser = Ghostuser.find_by_phone_number("+"+params[:msisdn])
+
+          if ghostuser
+            user.ghostuser = ghostuser
+            user.save
+            ghostuser.update_attributes(isLinked: true)
+          end
+
+        end
+
       end
 
     end
+
     render json: params
   end
 

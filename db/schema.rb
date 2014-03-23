@@ -18,7 +18,6 @@ ActiveRecord::Schema.define(:version => 20140305222712) do
     t.text     "description"
     t.datetime "start"
     t.time     "length"
-    t.datetime "end_date"
     t.integer  "user_id"
     t.float    "latitude"
     t.float    "longitude"
@@ -30,6 +29,7 @@ ActiveRecord::Schema.define(:version => 20140305222712) do
     t.string   "image_content_type"
     t.integer  "image_file_size"
     t.datetime "image_updated_at"
+    t.datetime "end_date"
     t.boolean  "private_location",   :default => false
     t.string   "invitation_token"
   end
@@ -130,7 +130,6 @@ ActiveRecord::Schema.define(:version => 20140305222712) do
     t.string   "phone_number"
     t.boolean  "phone_verified"
     t.integer  "ghostuser_id"
-    t.boolean  "is_ghost",                   :default => false
   end
 
 end
