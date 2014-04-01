@@ -11,12 +11,15 @@ ENV['RAILS_ENV'] ||= 'production'
 # SSH settings
 
 ## New server
+#set :server_ip, "91.121.65.49"
 set :server_ip, "91.121.65.49"
+
 
 
 default_run_options[:pty] = true
 set :ssh_options, {:forward_agent => true}
 set :user, "deploy"
+set :user, "canu"
 
 ###
 # Deploy settings
@@ -49,7 +52,8 @@ set :deploy_via, :remote_cache
 # BBDD settings
 #
 
-set :db_passwd, "wL8XSPha"
+#set :db_passwd, "wL8XSPha"
+set :db_passwd, "Itshalfpast8"
 set :db_name, "api.canu.se_production"
 
 role :app, server_ip
