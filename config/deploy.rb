@@ -12,7 +12,7 @@ ENV['RAILS_ENV'] ||= 'production'
 
 ## New server
 #set :server_ip, "91.121.65.49"
-set :server_ip, "91.121.65.49"
+set :server_ip, "62.210.114.175"
 
 
 
