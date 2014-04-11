@@ -7,14 +7,14 @@ class User < ActiveRecord::Base
   
   
   has_attached_file :profile_image, 
-                    #:styles => { :small => "265x"},
+                    :styles => { :thumb => "190x190" },
                     :url  => "/system/:id/:class/:basename.:extension",
                     :path => ":rails_root/public/system/:id/:class/:basename.:extension",
                     :convert_options => {:all => ["-strip", "-colorspace RGB"]}
   
-  validates :email, :presence => true#, :if => :enable_email_validations}
-  validates :email, :uniqueness => true#,:if => :enable_email_validations}
-  validates :email, :format => {:with => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/}#,:message => "El email no tiene el formato correcto"}#, :if => :enable_email_validations }
+  validates :email, :allow_blank => true,:uniqueness => true, :format => {:with => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/}
+  #validates :email, :uniqueness => true#,:if => :enable_email_validations}
+  #validates :email, :format => {:with => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/}#,:message => "El email no tiene el formato correcto"}#, :if => :enable_email_validations }
 
   validates :password, :presence => true #, :if => :enable_password_validations}
   #validates :proxy_password_confirmation, :confirmation => true, :on => :edit
@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   validates :user_name, :uniqueness => true
   
   
-  validates :first_name, :presence => true
+  #validates :first_name, :presence => true
   #validates :last_name, :presence => true
 
   # validates :phone_number, :uniqueness => true
@@ -107,7 +107,10 @@ class User < ActiveRecord::Base
     end
    
    def downcase_email
-     self.email = self.email.downcase
+      if !self.email.nil?
+        self.email = self.email.downcase
+        puts "GOOD"
+      end
    end
 
    def self.encrypted_password(proxy_password,salt)

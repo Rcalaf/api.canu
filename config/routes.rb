@@ -4,7 +4,7 @@ CanuApi::Application.routes.draw do
 
   match 'users/email-verification/:token' => 'users#mail_verification', :as => 'mail_verification', :via => :get
   match 'users/sms-verification' => 'users#sms_verification', :as => 'sms_verification'
-  match 'users/sms-verification-dev' => 'users#sms_verification_dev', :as => 'sms_verification_dev', :via => :post
+  match 'users/sms-verification-v2' => 'users#sms_verification_v2', :as => 'sms_verification_v2', :via => :post
   match 'users/search/phonebook' => 'users#phonebook', :as => 'phonebook', :via => :post
   
   resources :users 
@@ -13,6 +13,7 @@ CanuApi::Application.routes.draw do
   match 'users/:user_id/activities/tribes/' => 'users#activities', :type => 'tribes', :via => :get
   match 'users/:user_id/activities/' => 'activities#create', :via => :post
   match 'users/:user_id/profile-image' => 'users#update_profile_pic', :via => :put
+  match 'users/:user_id/profile-image' => 'users#update_profile_pic', :via => :post
   match 'users/:user_id/device_token' => 'users#set_device_token', :via => :post
   match 'users/:user_id/activities/:activity_id' => 'activities#update', :via => :put
   match 'users/:user_id/activities/:activity_id' => 'activities#destroy', :via => :delete
