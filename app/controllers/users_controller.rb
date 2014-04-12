@@ -139,7 +139,6 @@ class UsersController < ApplicationController
     if params[:first_name]
       last_name = params[:first_name].split(' ').last
     end
-
     user = {email: params[:email],first_name: params[:first_name],last_name:last_name, proxy_password: params[:proxy_password], user_name: params[:user_name], profile_image: params[:profile_image]}
     user = User.create(user)
 
