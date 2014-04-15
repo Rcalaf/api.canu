@@ -74,7 +74,7 @@ class ActivitiesController < ApplicationController
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     if user.schedule << activity
-      #user.devices.each {|device| device.activity_notifications.create(activity_id: activity.id,notification_type: 'go') }
+      Activity.send_new_invit_notification(activity,user)
     end
     if (params[:latitude] && params[:longitude])
       render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(activity.private_location)
@@ -87,7 +87,7 @@ class ActivitiesController < ApplicationController
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
     if user.schedule.delete activity
-      #user.devices.each {|device| device.activity_notifications.find_by_activity_id(activity.id).delete if device.activity_notifications.find_by_activity_id(activity.id)}
+      Activity.send_remove_invit_notification(activity,user)
     end
     if (params[:latitude] && params[:longitude])
       render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(activity.private_location)

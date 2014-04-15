@@ -52,6 +52,14 @@ class Activity < ActiveRecord::Base
     notifications = []
     # if you are around the event
 
+    name = ""
+
+    if activity.user.first_name.empty?
+      name = activity.user.user_name
+    else
+      name = activity.user.first_name
+    end
+
     if !activity.private_location
       User.in_range(activity.latitude,activity.longitude).each do |user|
         puts user
@@ -82,12 +90,48 @@ class Activity < ActiveRecord::Base
       invitation_list.attendees_invitation.each do |user|
         user.devices.each do |device| 
           device.update_attribute(:badge,device.badge.to_i + 1)
-          notifications << APNS::Notification.new(device.token,{:alert => "You are invited to \"#{activity.title}\" on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity'}}})
+          notifications << APNS::Notification.new(device.token,{:alert => "#{name} invited you to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity'}}})
         end
       end
     end
     APNS.send_notifications(notifications) unless notifications.empty?
-  end       
+  end
+
+  def self.send_new_invit_notification(activity,new_user)
+    name = ""
+
+    if new_user.first_name.empty?
+      name = new_user.user_name
+    else
+      name = new_user.first_name
+    end
+    notifications = []
+     activity.attendees.each do |user|
+      user.devices.each do |device| 
+         device.update_attribute(:badge,device.badge.to_i + 1)
+         notifications << APNS::Notification.new(device.token,{:alert => "#{name} is going to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'new invit'}}})
+      end
+    end
+    APNS.send_notifications(notifications) unless notifications.empty?
+  end 
+
+  def self.send_remove_invit_notification(activity,remove_user)
+    name = ""
+
+    if remove_user.first_name.empty?
+      name = remove_user.user_name
+    else
+      name = remove_user.first_name
+    end
+    notifications = []
+     activity.attendees.each do |user|
+      user.devices.each do |device| 
+         device.update_attribute(:badge,device.badge.to_i + 1)
+         notifications << APNS::Notification.new(device.token,{:alert => "#{name} is no longer going to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'remove invit'}}})
+      end
+    end
+    APNS.send_notifications(notifications) unless notifications.empty?
+  end   
   
   private 
   
@@ -98,14 +142,35 @@ class Activity < ActiveRecord::Base
   end
   
   def send_edited_notification
-    notifications = []
-    self.attendees.each do |user|
-      user.devices.each do |device| 
-         device.update_attribute(:badge,device.badge.to_i + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you are attending has been updated!",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edit activity'}}})
+
+    if self.changed?
+
+      text = ""
+
+      if self.title_changed?
+        text = text + "#{self.title_was} is now #{self.title} "
+      else
+        text = text + "#{self.title} is now "
       end
+
+      if self.start_changed?
+        text = text + "at #{self.start.strftime('%H:%M')} #{self.start.strftime('%b %d')} "
+      end
+
+      if self.city_changed? || self.street_changed? || self.zip_code_changed? || self.country_changed? || self.latitude_changed? || self.longitude_changed?
+        text = text + "at a new location"
+      end
+
+      notifications = []
+      self.attendees.each do |user|
+        user.devices.each do |device| 
+           device.update_attribute(:badge,device.badge.to_i + 1)
+           notifications << APNS::Notification.new(device.token,{:alert => text,:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edit activity'}}})
+        end
+      end
+      APNS.send_notifications(notifications) unless notifications.empty?
     end
-    APNS.send_notifications(notifications) unless notifications.empty?
+
   end
   
   def send_deleted_notificaiton
@@ -113,7 +178,7 @@ class Activity < ActiveRecord::Base
     self.attendees.each do |user|
       user.devices.each do |device| 
          device.update_attribute(:badge,device.badge.to_i + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you would attend has been deleted!",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'delete activity'}}})
+         notifications << APNS::Notification.new(device.token,{:alert => "#{self.title} is cancelled",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'delete activity'}}})
       end
     end
     APNS.send_notifications(notifications) unless notifications.empty?
