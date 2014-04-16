@@ -73,9 +73,21 @@ class ActivitiesController < ApplicationController
   def add_to_schedule
     activity = Activity.find(params[:activity_id])
     user = User.find(params[:user_id])
-    if user.schedule << activity
-      Activity.send_new_invit_notification(activity,user)
+
+    userIsAttendees = false
+
+    activity.attendees.each do |userAttendee|
+      if userAttendee.id == user.id
+        userIsAttendees = true
+      end
     end
+
+    if !userIsAttendees
+      if user.schedule << activity
+        Activity.send_new_invit_notification(activity,user)
+      end
+    end
+
     if (params[:latitude] && params[:longitude])
       render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(activity.private_location)
     else

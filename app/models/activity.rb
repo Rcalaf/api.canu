@@ -77,7 +77,7 @@ class Activity < ActiveRecord::Base
             if count.unlock
               user.devices.each do |device| 
                 device.update_attribute(:badge,device.badge.to_i + 1)
-                notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{activity.title}\" has been created on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity'}}})
+                notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{activity.title}\" has been created on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity around'}}})
               end
             end
           end
@@ -90,7 +90,7 @@ class Activity < ActiveRecord::Base
       invitation_list.attendees_invitation.each do |user|
         user.devices.each do |device| 
           device.update_attribute(:badge,device.badge.to_i + 1)
-          notifications << APNS::Notification.new(device.token,{:alert => "#{name} invited you to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity'}}})
+          notifications << APNS::Notification.new(device.token,{:alert => "#{name} invited you to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity invit'}}})
         end
       end
     end
@@ -163,7 +163,7 @@ class Activity < ActiveRecord::Base
 
       notifications = []
       self.attendees.each do |user|
-        user.devices.each do |device| 
+        user.devices.each do |device|
            device.update_attribute(:badge,device.badge.to_i + 1)
            notifications << APNS::Notification.new(device.token,{:alert => text,:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edit activity'}}})
         end
