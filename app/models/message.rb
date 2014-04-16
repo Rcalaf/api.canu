@@ -9,16 +9,16 @@ class Message < ActiveRecord::Base
   private 
     
   def send_chat_message_notification
-     notifications = []
-     receivers = self.activity.attendees.to_a
+    Thread.new do
+      receivers = self.activity.attendees.to_a
      receivers.delete self.user
      receivers.each do |user|
        user.devices.each do |device| 
           device.update_attribute(:badge,device.badge.to_i + 1)
-          notifications << APNS::Notification.new(device.token,{:alert => "#{self.user.user_name}: #{self.text[0..(101-self.user.user_name.size)]}",:badge => device.badge,:sound => 'default',:other => {info: {id: self.activity.id, type: 'chat'}}})
+          APNS.send_notification(device.token,{:alert => "#{self.user.user_name}: #{self.text[0..(101-self.user.user_name.size)]}",:badge => device.badge,:sound => 'default',:other => {info: {id: self.activity.id, type: 'chat'}}})
        end
      end
-     APNS.send_notifications(notifications) unless notifications.empty?
+    end     
   end
   
   
