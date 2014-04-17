@@ -139,7 +139,9 @@ class ActivitiesController < ApplicationController
           end
 
           if !userIsAttendees
-            arrayUserInvited << userInvited
+            if userInvited.phone_verified
+              arrayUserInvited << userInvited
+            end
           end
         end
 
@@ -157,7 +159,9 @@ class ActivitiesController < ApplicationController
             end
 
             if !userIsAttendees
-             arrayUserInvited << userInvited
+              if userInvited.phone_verified
+                arrayUserInvited << userInvited
+              end
             end
 
           else
