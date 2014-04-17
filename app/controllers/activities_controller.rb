@@ -122,12 +122,14 @@ class ActivitiesController < ApplicationController
     user = User.find_by_id(params[:user_id])
     if user
       activity = Activity.find(params[:activity_id])
-      invitationList = InvitationList.where('activity_id = ? AND user_id = ?',params[:activity_id],user.id).first
-      if invitationList
 
+      invitationLists = InvitationList.where('activity_id = ?',params[:activity_id])
+
+      arrayUserInvited = Array.new()
+      arrayGhostUser = Array.new()
+
+      invitationLists.each do |invitationList|
         #If user already on Attendees, disappear this one to the invitation list
-
-        arrayUserInvited = Array.new()
         invitationList.attendees_invitation.each do |userInvited|
           userIsAttendees = false
           activity.attendees.each do |userAttendee|
@@ -141,7 +143,6 @@ class ActivitiesController < ApplicationController
           end
         end
 
-        arrayGhostUser = Array.new()
         invitationList.attendees_invitation_ghostusers.each do |ghostUser|
           if ghostUser.isLinked
             
@@ -163,6 +164,10 @@ class ActivitiesController < ApplicationController
             arrayGhostUser << ghostUser
           end
         end
+        
+      end
+
+      if !invitationLists.empty?
         attendees = []
         activity.attendees.each do |attendee| 
                   attendees << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
