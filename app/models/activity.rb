@@ -99,6 +99,27 @@ class Activity < ActiveRecord::Base
     end
   end
 
+  def self.send_new_people_notification(activity,new_peoples)
+    #if you are invited
+
+    name = ""
+
+    if activity.user.first_name.blank?
+      name = activity.user.user_name
+    else
+      name = activity.user.first_name
+    end
+
+    new_peoples.each do |user|
+      user.devices.each do |device| 
+          puts device.token
+          device.update_attribute(:badge,device.badge.to_i + 1)
+          APNS.send_notification(device.token,{:alert => "#{name} invited you to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity invit'}}})
+        end
+    end
+
+  end
+
   def self.send_new_invit_notification(activity,new_user)
     Thread.new do
       name = ""

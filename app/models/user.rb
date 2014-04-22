@@ -76,6 +76,7 @@ class User < ActiveRecord::Base
     user = User.find_by_email(id.downcase) || User.find_by_user_name(id)
     if user
       expected_password = encrypted_password(password,user.salt)
+      puts expected_password
       if user.password != expected_password
         user.errors.add :password, "password wrong"
       else

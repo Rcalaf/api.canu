@@ -17,7 +17,7 @@ CanuApi::Application.routes.draw do
   match 'users/:user_id/device_token' => 'users#set_device_token', :via => :post
   match 'users/:user_id/activities/:activity_id' => 'activities#update', :via => :put
   match 'users/:user_id/activities/:activity_id' => 'activities#destroy', :via => :delete
-  
+  match 'users/:user_id/activities/:activity_id/addpeople' => 'activities#addpeople', :via => :post
   
 
 

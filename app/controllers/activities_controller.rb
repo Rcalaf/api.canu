@@ -69,6 +69,75 @@ class ActivitiesController < ApplicationController
       render json: activity.errors
     end
   end
+
+  def addpeople
+    
+    activity = Activity.find(params[:activity_id]) 
+    userOwner = User.find(params[:user_id])
+
+    invitationLists = InvitationList.where('activity_id = ?',params[:activity_id])
+
+    arrayNewPeoples = Array.new()
+
+    arrayNewUsers = Array.new()
+
+    params[:guests].each do |phone_number|
+
+      alreadyAdding = false
+
+      invitationLists.each do |invitationList|
+
+        #If user already on Attendees
+        invitationList.attendees_invitation.each do |userInvited|
+          if userInvited.phone_number == phone_number
+            alreadyAdding = true
+          end
+        end
+        #If user already on Attendees
+        invitationList.attendees_invitation_ghostusers.each do |ghostUser|
+          if !ghostUser.isLinked
+            if ghostUser.phone_number == phone_number
+              alreadyAdding = true
+            end
+          end
+        end 
+
+      end
+
+      if !alreadyAdding
+        arrayNewPeoples << phone_number
+      end
+
+    end
+
+    if arrayNewPeoples.length != 0 && userOwner && activity
+      invitationList = InvitationList.new
+
+      invitationList.user = userOwner
+      invitationList.activity = activity
+
+      arrayNewPeoples.each do |phone_number|
+
+        user = User.find_by_phone_number(phone_number)
+
+        if user
+          invitationList.attendees_invitation << user
+          arrayNewUsers << user
+        else
+          ghostuser = Ghostuser.find_by_phone_number(phone_number)
+          if !ghostuser
+            ghostuser = Ghostuser.create(isLinked: false, phone_number: phone_number)
+          end
+          invitationList.attendees_invitation_ghostusers << ghostuser
+        end
+
+      end
+
+      invitationList.save
+      Activity.send_new_people_notification(activity,arrayNewUsers)
+    end
+    render json: activity, status: 201
+  end
   
   def add_to_schedule
     activity = Activity.find(params[:activity_id])
