@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140409101153) do
+ActiveRecord::Schema.define(:version => 20140424122336) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(:version => 20140409101153) do
     t.datetime "end_date"
     t.boolean  "private_location",   :default => false
     t.string   "invitation_token"
+    t.string   "place_name"
   end
 
   create_table "activities_users", :id => false, :force => true do |t|
