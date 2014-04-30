@@ -118,6 +118,8 @@ class UsersController < ApplicationController
 
     allUsers = Array.new
 
+    # usersWithPhoneNumber = User.where('phone_verified = ?',true)
+
     params[:phone_numbers].each do |phone_number|
 
       user = User.find_by_phone_number(phone_number)

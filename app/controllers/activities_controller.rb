@@ -243,18 +243,22 @@ class ActivitiesController < ApplicationController
       if !invitationLists.empty?
         attendees = []
         activity.attendees.each do |attendee| 
-                  attendees << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
+            if attendee.phone_verified
+              attendees << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
                   email:attendee.email, active:attendee.active, profile_pic: attendee.profile_image.url(:default, timestamp: false),
                   user_name: attendee.user_name, phone_number: attendee.phone_number, 
                   phone_verified:attendee.phone_verified }
+            end
         end
         
         arrayUserInvitedSerilized = []
         arrayUserInvited.each do |attendee| 
-                  arrayUserInvitedSerilized << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
+          if attendee.phone_verified
+            arrayUserInvitedSerilized << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
                   email:attendee.email, active:attendee.active, profile_pic: attendee.profile_image.url(:default, timestamp: false),
                   user_name: attendee.user_name, phone_number: attendee.phone_number, 
                   phone_verified:attendee.phone_verified }
+          end
         end
        
           arrayGhostUserSerilized = []
@@ -272,10 +276,12 @@ class ActivitiesController < ApplicationController
       else
         attendees = []
         activity.attendees.each do |attendee| 
-                  attendees << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
+          if attendee.phone_verified
+            attendee.phone_verified << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
                   email:attendee.email, active:attendee.active, profile_pic: attendee.profile_image.url(:default, timestamp: false),
                   user_name: attendee.user_name, phone_number: attendee.phone_number, 
                   phone_verified:attendee.phone_verified }
+          end
         end
         render json: {
           attendees: attendees       
