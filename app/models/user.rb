@@ -110,7 +110,6 @@ class User < ActiveRecord::Base
    def downcase_email
       if !self.email.nil?
         self.email = self.email.downcase
-        puts "GOOD"
       end
    end
 
