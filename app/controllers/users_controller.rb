@@ -174,21 +174,14 @@ class UsersController < ApplicationController
   end
   
   def set_device_token
-    user = User.find(params[:user_id])
-
-    #delete previous devices
-    oldDeviceToken = Device.where('user_id = ?',user.id)
-    oldDeviceToken.each do |oldDevice|
-      oldDevice.destroy()
-    end
-
+    user = User.find(params[:user_id]) 
     # if this device token is saved for another one user / Delete this token
-    # allSameDevices = Device.where('token = ?',params[:device_token])
-    # allSameDevices.each do |sameDevice|
-    #   if sameDevice.user_id != user.id
-    #     sameDevice.destroy()
-    #   end
-    # end
+    allSameDevices = Device.where('token = ?',params[:device_token])
+    allSameDevices.each do |sameDevice|
+      if sameDevice.user_id != user.id
+        sameDevice.destroy()
+      end
+    end
 
     device = Device.create(token: params[:device_token], user_id: user.id)
     #if user.devices << Device.create(:token => params[:device_token])
