@@ -277,7 +277,7 @@ class ActivitiesController < ApplicationController
         attendees = []
         activity.attendees.each do |attendee| 
           if attendee.phone_verified
-            attendee.phone_verified << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
+            attendees << {id: attendee.id, first_name: attendee.first_name, last_name:attendee.last_name, 
                   email:attendee.email, active:attendee.active, profile_pic: attendee.profile_image.url(:default, timestamp: false),
                   user_name: attendee.user_name, phone_number: attendee.phone_number, 
                   phone_verified:attendee.phone_verified }
