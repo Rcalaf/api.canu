@@ -135,7 +135,7 @@ class UsersController < ApplicationController
     puts "Error code:"
     # puts params[:err-code]
 
-    render status: 200
+    render json: "",status: 200
 
   end
 
