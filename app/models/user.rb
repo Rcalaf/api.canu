@@ -23,6 +23,7 @@ class User < ActiveRecord::Base
   
   validates :user_name, :presence => true
   validates :user_name, :uniqueness => true
+  validates :user_name, format: { with: /\A[a-zA-Z0-9]+\Z/ }
   
   
   #validates :first_name, :presence => true
