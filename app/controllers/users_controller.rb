@@ -115,7 +115,28 @@ class UsersController < ApplicationController
   end
 
   def sms_verification_v2_failed
+
     Mailer.sms_failed().deliver
+    puts params
+    puts "Phone number:"
+    puts params[:msisdn]
+    if params[:msisdn][0,1] == 1
+      puts "US Phone number"
+    else
+      puts "Not US Phone number"
+    end
+    puts "Status:"
+    puts params[:status]
+    if params[:status] == "delivered"
+      puts "It's delivered"
+    else
+      puts "It's not delivered"
+    end
+    puts "Error code:"
+    puts params[:err-code]
+
+    render status: 200
+
   end
 
   def phonebook
