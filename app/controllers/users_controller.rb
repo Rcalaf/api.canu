@@ -133,7 +133,7 @@ class UsersController < ApplicationController
       puts "It's not delivered"
     end
     puts "Error code:"
-    puts params[:err-code]
+    # puts params[:err-code]
 
     render status: 200
 
