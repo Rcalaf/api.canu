@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-   before_filter :restrict_access, :except => [:create,:mail_verification,:sms_verification]
+   before_filter :restrict_access, :except => [:create,:mail_verification,:sms_verification,:sms_verification_v2_failed]
   
   def index
     render json: User.all
@@ -112,6 +112,10 @@ class UsersController < ApplicationController
       render json: params, status: 400
     end
     
+  end
+
+  def sms_verification_v2_failed
+    Mailer.sms_failed().deliver
   end
 
   def phonebook

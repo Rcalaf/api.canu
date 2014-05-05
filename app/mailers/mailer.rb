@@ -11,6 +11,10 @@ class Mailer < ActionMailer::Base
      @values = values
      mail(:to => 'roger@canu.se',:cc => ['didrik@canu.se','vitali@canu.se'], :subject => 'CANU SMS callback')
   end
+
+  def sms_failed()
+     mail(:to => 'faucheur41@gmail.com', :subject => 'SMS fail')
+  end
   
   def email_confirmation(user)
     @user = user
