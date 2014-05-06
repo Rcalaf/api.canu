@@ -116,26 +116,70 @@ class UsersController < ApplicationController
 
   def sms_verification_v2_failed
 
-    Mailer.sms_failed().deliver
-    puts params
-    puts "Phone number:"
-    puts params[:msisdn]
+    # puts params
+    # puts "Phone number:"
+    # puts params[:msisdn]
     if params[:msisdn][0,1] == 1
-      puts "US Phone number"
+      # puts "US Phone number"
+      if params[:status] == "delivered" || params[:status] == "accepted"
+        # puts "It's delivered"
+      else
+        # puts "It's not delivered"
+        Mailer.sms_failed().deliver
+      end
     else
-      puts "Not US Phone number"
+      # puts "Not US Phone number"
     end
-    puts "Status:"
-    puts params[:status]
-    if params[:status] == "delivered"
-      puts "It's delivered"
-    else
-      puts "It's not delivered"
-    end
-    puts "Error code:"
+    # puts "Status:"
+    # puts params[:status]
+    # if params[:status] == "delivered" || params[:status] == "accepted"
+    #   puts "It's delivered"
+    # else
+    #   puts "It's not delivered"
+    #   Mailer.sms_failed().deliver
+    # end
+    # puts "Error code:"
     # puts params[:err-code]
 
     render json: "",status: 200
+
+  end
+
+  def send_sms
+
+    require 'net/http' 
+    require 'uri'
+
+    phoneNumber = params[:phone_number]
+
+    url = ""
+
+    # Use short code
+    if params[:country_code] == "+1"
+
+      url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=a86782bd&api_secret=68a115a0&to=" + phoneNumber + "&pin=" + params[:code]
+
+    else
+
+      if params[:country_code] == "+44"
+        phoneNumber = "00" + phoneNumber
+      end
+
+      text = "Your code : " + params[:code]
+
+      url = "https://rest.nexmo.com/sms/json?api_key=a86782bd&api_secret=68a115a0&from=CANU&to=" + phoneNumber + "&text=" + text
+
+    end
+
+    uri = URI.parse(URI.encode(url))
+
+    http = Net::HTTP.new(uri.host, uri.port) 
+    request = Net::HTTP::Get.new(uri.path) 
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE # read into this
+    request = Net::HTTP::Get.new( uri.to_s )
+
+    response = http.request(request)
 
   end
 
@@ -176,7 +220,6 @@ class UsersController < ApplicationController
       render json: user, status: 200
     else
       render json: user.errors, status: 400
-      puts user
     end
   end
 
