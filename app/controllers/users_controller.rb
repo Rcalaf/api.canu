@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-   before_filter :restrict_access, :except => [:create,:mail_verification,:sms_verification,:sms_verification_v2_failed]
+   before_filter :restrict_access, :except => [:create,:mail_verification,:sms_verification,:sms_verification_v2_failed,:send_sms_reset_password,:reset_password]
   
   def index
     render json: User.all
@@ -183,6 +183,63 @@ class UsersController < ApplicationController
 
   end
 
+  def send_sms_reset_password
+
+    usersWithPhoneNumber = User.where('phone_verified = ?',true)
+    user = usersWithPhoneNumber.find_by_phone_number("+" + params[:phone_number])
+
+    if user
+
+      # Dev mode
+      if params[:key] == "9384nc934875"
+        render json: user, status: 200
+      else
+
+        require 'net/http' 
+        require 'uri'
+
+
+        phoneNumber = params[:phone_number]
+
+        url = ""
+
+        # Use short code
+        if params[:country_code] == "+1"
+
+          url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=a86782bd&api_secret=68a115a0&to=" + phoneNumber + "&pin=" + params[:code]
+
+        else
+
+          if params[:country_code] == "+44"
+            phoneNumber = "00" + phoneNumber
+          end
+
+          text = "Your code : " + params[:code]
+
+          url = "https://rest.nexmo.com/sms/json?api_key=a86782bd&api_secret=68a115a0&from=CANU&to=" + phoneNumber + "&text=" + text
+
+        end
+
+        uri = URI.parse(URI.encode(url))
+
+        http = Net::HTTP.new(uri.host, uri.port) 
+        request = Net::HTTP::Get.new(uri.path) 
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE # read into this
+        request = Net::HTTP::Get.new( uri.to_s )
+
+        response = http.request(request)
+
+        render json: user, status: 200
+
+      end
+
+    else
+      render json: user.errors, status: 400
+    end
+    
+  end
+
   def phonebook
 
     allUsers = Array.new
@@ -229,6 +286,24 @@ class UsersController < ApplicationController
       render json: user, status: 200
     else 
       render json: user.errors, status: 400
+    end
+  end
+
+  def reset_password
+
+    if params[:key] == "9348yr20qo98r4"
+
+      puts params[:user_id]
+
+      user = User.find(params[:user_id])
+      if user.update_attributes(params[:user])
+        render json: user, status: 200
+      else 
+        render json: user.errors, status: 400
+      end
+    else
+      puts "rien"
+      render json: "", status: 400
     end
   end
   
