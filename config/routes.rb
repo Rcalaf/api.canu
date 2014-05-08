@@ -5,6 +5,9 @@ CanuApi::Application.routes.draw do
   match 'users/email-verification/:token' => 'users#mail_verification', :as => 'mail_verification', :via => :get
   match 'users/sms-verification' => 'users#sms_verification', :as => 'sms_verification'
   match 'users/sms-verification-v2' => 'users#sms_verification_v2', :as => 'sms_verification_v2', :via => :post
+  match 'users/sms-verification-v2-failed' => 'users#sms_verification_v2_failed', :as => 'sms_verification_v2_failed', :via => :post
+  match 'users/send-sms' => 'users#send_sms', :as => 'send_sms', :via => :post
+  match 'users/send-sms-reset-password' => 'users#send_sms_reset_password', :as => 'send_sms_reset_password', :via => :post
   match 'users/search/phonebook' => 'users#phonebook', :as => 'phonebook', :via => :post
   
   resources :users 
@@ -12,12 +15,13 @@ CanuApi::Application.routes.draw do
   match 'users/:user_id/activities/' => 'users#activities', :type => 'profile', :via => :get
   match 'users/:user_id/activities/tribes/' => 'users#activities', :type => 'tribes', :via => :get
   match 'users/:user_id/activities/' => 'activities#create', :via => :post
+  match 'users/:user_id/reset-password' => 'users#reset_password', :via => :put
   match 'users/:user_id/profile-image' => 'users#update_profile_pic', :via => :put
   match 'users/:user_id/profile-image' => 'users#update_profile_pic', :via => :post
   match 'users/:user_id/device_token' => 'users#set_device_token', :via => :post
   match 'users/:user_id/activities/:activity_id' => 'activities#update', :via => :put
   match 'users/:user_id/activities/:activity_id' => 'activities#destroy', :via => :delete
-  
+  match 'users/:user_id/activities/:activity_id/addpeople' => 'activities#addpeople', :via => :post
   
 
 

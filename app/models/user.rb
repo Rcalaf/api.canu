@@ -23,6 +23,7 @@ class User < ActiveRecord::Base
   
   validates :user_name, :presence => true
   validates :user_name, :uniqueness => true
+  validates :user_name, format: { with: /\A[a-zA-Z0-9]+\Z/ }
   
   
   #validates :first_name, :presence => true
@@ -76,6 +77,7 @@ class User < ActiveRecord::Base
     user = User.find_by_email(id.downcase) || User.find_by_user_name(id)
     if user
       expected_password = encrypted_password(password,user.salt)
+      puts expected_password
       if user.password != expected_password
         user.errors.add :password, "password wrong"
       else
@@ -109,7 +111,6 @@ class User < ActiveRecord::Base
    def downcase_email
       if !self.email.nil?
         self.email = self.email.downcase
-        puts "GOOD"
       end
    end
 

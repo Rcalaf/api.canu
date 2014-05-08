@@ -2,7 +2,7 @@ class Activity < ActiveRecord::Base
   #0.01	--> 1.1132 km * 30 =  33.396 km
   RANGE = (100*0.01)
   
-  attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :private_location, :invitation_token
+  attr_accessible :description, :length, :start, :end_date, :title, :user_id, :city, :street, :zip_code, :country, :latitude, :longitude, :private_location, :invitation_token, :place_name
   before_save :set_end_date
   before_update :send_edited_notification
   # after_create :send_created_notification
@@ -34,7 +34,7 @@ class Activity < ActiveRecord::Base
   }
   
   belongs_to :user 
-  has_many :activity_notifications, dependent: :destroy
+  # has_many :activity_notifications, dependent: :destroy
   
   has_and_belongs_to_many :attendees,
                           class_name: "User",
@@ -49,45 +49,113 @@ class Activity < ActiveRecord::Base
   validates :title, :presence => true  
 
   def self.send_created_notification(activity)
-    notifications = []
-    # if you are around the event
 
-    if !activity.private_location
-      User.in_range(activity.latitude,activity.longitude).each do |user|
-        puts user
-        userAlreadyInvited = false
-        activity.invitation_lists.each do |invitation_list|
-          invitation_list.attendees_invitation.each do |userinvit|
-            if user != userinvit
-              userAlreadyInvited = true
+    Thread.new do
+      # if you are around the event
+
+      name = ""
+
+      if activity.user.first_name.blank?
+        name = activity.user.user_name
+      else
+        name = activity.user.first_name
+      end
+
+      if !activity.private_location
+        User.in_range(activity.latitude,activity.longitude).each do |user|
+          puts user
+          userAlreadyInvited = false
+          activity.invitation_lists.each do |invitation_list|
+            invitation_list.attendees_invitation.each do |userinvit|
+              if user != userinvit
+                userAlreadyInvited = true
+              end
             end
           end
-        end
-        if !userAlreadyInvited
-          count = Counter.find_by_user_id(user.id)
-          if count
-            if count.unlock
-              user.devices.each do |device| 
-                device.update_attribute(:badge,device.badge.to_i + 1)
-                notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{activity.title}\" has been created on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity'}}})
+          if !userAlreadyInvited
+            count = Counter.find_by_user_id(user.id)
+            if count
+              if count.unlock
+                user.devices.each do |device| 
+                  device.update_attribute(:badge,device.badge.to_i + 1)
+                  APNS.send_notification(device.token,{:alert => "The activity \"#{activity.title}\" has been created on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity around'}}})
+                end
               end
             end
           end
         end
       end
-    end
-    
-    #if you are invited
-    activity.invitation_lists.each do |invitation_list|
-      invitation_list.attendees_invitation.each do |user|
-        user.devices.each do |device| 
-          device.update_attribute(:badge,device.badge.to_i + 1)
-          notifications << APNS::Notification.new(device.token,{:alert => "You are invited to \"#{activity.title}\" on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity'}}})
+      
+      #if you are invited
+      activity.invitation_lists.each do |invitation_list|
+        invitation_list.attendees_invitation.each do |user|
+          user.devices.each do |device| 
+            puts device.token
+            device.update_attribute(:badge,device.badge.to_i + 1)
+            APNS.send_notification(device.token,{:alert => "#{name} invited you to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity invit'}}})
+          end
         end
       end
     end
-    APNS.send_notifications(notifications) unless notifications.empty?
-  end       
+  end
+
+  def self.send_new_people_notification(activity,new_peoples)
+    #if you are invited
+
+    name = ""
+
+    if activity.user.first_name.blank?
+      name = activity.user.user_name
+    else
+      name = activity.user.first_name
+    end
+
+    new_peoples.each do |user|
+      user.devices.each do |device| 
+          puts device.token
+          device.update_attribute(:badge,device.badge.to_i + 1)
+          APNS.send_notification(device.token,{:alert => "#{name} invited you to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity invit'}}})
+        end
+    end
+
+  end
+
+  def self.send_new_invit_notification(activity,new_user)
+    Thread.new do
+      name = ""
+
+      if new_user.first_name.blank?
+        name = new_user.user_name
+      else
+        name = new_user.first_name
+      end
+       activity.attendees.each do |user|
+        user.devices.each do |device| 
+           device.update_attribute(:badge,device.badge.to_i + 1)
+           APNS.send_notification(device.token,{:alert => "#{name} is going to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'new invit'}}})
+        end
+      end
+    end
+  end 
+
+  def self.send_remove_invit_notification(activity,remove_user)
+
+    Thread.new do
+      name = ""
+
+      if remove_user.first_name.blank?
+        name = remove_user.user_name
+      else
+        name = remove_user.first_name
+      end
+       activity.attendees.each do |user|
+        user.devices.each do |device| 
+           device.update_attribute(:badge,device.badge.to_i + 1)
+           APNS.send_notification(device.token,{:alert => "#{name} is no longer going to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'remove invit'}}})
+        end
+      end
+    end
+  end   
   
   private 
   
@@ -98,25 +166,54 @@ class Activity < ActiveRecord::Base
   end
   
   def send_edited_notification
-    notifications = []
-    self.attendees.each do |user|
-      user.devices.each do |device| 
-         device.update_attribute(:badge,device.badge.to_i + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you are attending has been updated!",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edit activity'}}})
+
+    Thread.new do
+      if self.changed?
+
+        text = ""
+
+        if self.title_changed?
+          text = text + "#{self.title_was} is now #{self.title} "
+        else
+          text = text + "#{self.title} is now "
+        end
+
+        if self.start_changed?
+          text = text + "at #{self.start.strftime('%H:%M')} #{self.start.strftime('%b %d')} "
+        end
+
+        if self.city_changed? || self.street_changed? || self.zip_code_changed? || self.country_changed? || self.latitude_changed? || self.longitude_changed?
+          text = text + "at a new location"
+        end
+
+        self.attendees.each do |user|
+          user.devices.each do |device|
+             device.update_attribute(:badge,device.badge.to_i + 1)
+             APNS.send_notification(device.token,{:alert => text,:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edit activity'}}})
+          end
+        end
       end
     end
-    APNS.send_notifications(notifications) unless notifications.empty?
+
   end
   
   def send_deleted_notificaiton
-    notifications = []
+    puts "send_deleted_notificaiton"
+
+    arrayUserThread = []
+
     self.attendees.each do |user|
-      user.devices.each do |device| 
-         device.update_attribute(:badge,device.badge.to_i + 1)
-         notifications << APNS::Notification.new(device.token,{:alert => "The activity \"#{self.title}\" that you would attend has been deleted!",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'delete activity'}}})
+      arrayUserThread << user
+    end
+
+    Thread.new do
+      arrayUserThread.each do |user|
+        user.devices.each do |device| 
+           device.update_attribute(:badge,device.badge.to_i + 1)
+           APNS.send_notification(device.token,{:alert => "#{self.title} is cancelled",:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'delete activity'}}})
+        end
       end
     end
-    APNS.send_notifications(notifications) unless notifications.empty?
   end
   
   
