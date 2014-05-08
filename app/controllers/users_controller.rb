@@ -86,32 +86,32 @@ class UsersController < ApplicationController
     render json: params
   end
 
-  def sms_verification_dev
-
-    if params[:key] == "097c4qw87ryn02tnc2"
+  def sms_verification_v2
       
-      user = User.find_by_id(params[:user_id])
-      if user
-        # Disable phone_verified to users when theys have this phone number
-        usersWithSamePhoneNumbers = User.where('phone_number = ?',params[:phone_number])
-        usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
-          userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
-        end
-        
-        user.update_attributes(phone_number:params[:phone_number],phone_verified: true)
+    user = User.find_by_id(params[:user_id])
+    if user
+      # Disable phone_verified to users when theys have this phone number
+      usersWithSamePhoneNumbers = User.where('phone_number = ?',params[:phone_number])
+      usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
+        userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
+      end
+      
+      user.update_attributes(phone_number:params[:phone_number],phone_verified: true)
 
-        ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
+      ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
 
-        if ghostuser
-          user.ghostuser = ghostuser
-          user.save
-          ghostuser.update_attributes(isLinked: true)
-        end
-
+      if ghostuser
+        user.ghostuser = ghostuser
+        user.save
+        ghostuser.update_attributes(isLinked: true)
       end
 
+      render json: user, status: 200
+
+    else
+      render json: params, status: 400
     end
-    render json: params
+    
   end
 
   def phonebook
@@ -133,13 +133,24 @@ class UsersController < ApplicationController
   end
   
   def create
-    user = {email: params[:email],first_name: params[:first_name],last_name:params[:first_name].split(' ').last, proxy_password: params[:proxy_password], user_name: params[:user_name], profile_image: params[:profile_image]}
+
+    last_name = ""
+
+    if params[:first_name]
+      last_name = params[:first_name].split(' ').last
+    end
+
+    user = {email: params[:email],first_name: params[:first_name],last_name:last_name, proxy_password: params[:proxy_password], user_name: params[:user_name], profile_image: params[:profile_image]}
     user = User.create(user)
+
     if user.valid?
-      Mailer.welcome(user).deliver
-      render json: user, status: 201
+      if !user.email.nil?
+        Mailer.welcome(user).deliver
+      end
+      render json: user, status: 200
     else
       render json: user.errors, status: 400
+      puts user
     end
   end
 
