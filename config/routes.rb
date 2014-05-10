@@ -49,8 +49,6 @@ CanuApi::Application.routes.draw do
   match 'counter/' => 'counter#countMe', :via => :post
 
   match 'statistics/all' => 'statistics#index', :as => 'all_stats', :via => :get
-
-
     
 #  end
 #  match 'users/' => 'users#create', :as => :user, :method => :post

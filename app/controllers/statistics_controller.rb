@@ -4,5 +4,6 @@ class StatisticsController < ApplicationController
     activity = {total: Activity.all.size, total_active: Activity.active(Time.zone.now).size,total_active_local: Activity.active(Time.zone.now).privacy_location(false).size,total_active_tribe: Activity.active(Time.zone.now).privacy_location(true).size, active_activities_locations: Activity.select('latitude,longitude').active(Time.zone.now).privacy_location(true), active_activities_locations_local: Activity.select('latitude,longitude').active(Time.zone.now).privacy_location(false)}
     render json: {user: user, activity: activity}, status: 200
   end
+  
 end
 
