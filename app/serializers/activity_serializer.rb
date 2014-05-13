@@ -6,7 +6,7 @@ class ActivitySerializer < ActiveModel::Serializer
 
 
 
-  def attributes
+  def attendee_ids
     activity = object
     attendees = []
     activity.attendees.each do |attendee| 
