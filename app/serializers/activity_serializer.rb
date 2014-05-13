@@ -1,10 +1,24 @@
 class ActivitySerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :start, :length, :end_date, :city, :street, :zip_code, :country, :latitude, :longitude, :private_location, :user, :invitation_token, :place_name
+  attributes :id, :title, :description, :attendee_ids, :start, :length, :end_date, :city, :street, :zip_code, :country, :latitude, :longitude, :private_location, :user, :invitation_token, :place_name
   
   #has_one :user
-  has_many :attendees, embed: :ids
+  # has_many :attendees, embed: :ids
+
+
+
+  def attributes
+    activity = object
+    attendees = []
+    activity.attendees.each do |attendee| 
+        if attendee.phone_verified
+          attendees << attendee.id
+        end
+    end
+    activity.attendee_ids = attendees
+  end
   
   def attributes
+
     data = super
     data.delete :token
     data
