@@ -154,10 +154,20 @@ class UsersController < ApplicationController
 
     url = ""
 
+    phoneNumber = phoneNumber.gsub(/\s+/, "")
+    phoneNumber = phoneNumber.gsub(/-+/, "")
+    
     # Use short code
     if params[:country_code] == "+1"
 
-      url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=a86782bd&api_secret=68a115a0&to=" + phoneNumber + "&pin=" + params[:code]
+      if params[:country_name] == "Canada"
+        
+        text = "Your code : " + params[:code]
+        url = "https://rest.nexmo.com/sms/json?api_key=a86782bd&api_secret=68a115a0&from=12069396333&to=" + phoneNumber + "&text=" + text
+        
+      else
+        url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=a86782bd&api_secret=68a115a0&to=" + phoneNumber + "&pin=" + params[:code]
+      end
 
     else
 
@@ -203,10 +213,20 @@ class UsersController < ApplicationController
 
         url = ""
 
+        phoneNumber = phoneNumber.gsub(/\s+/, "")
+        phoneNumber = phoneNumber.gsub(/-+/, "")
+        
         # Use short code
         if params[:country_code] == "+1"
 
-          url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=a86782bd&api_secret=68a115a0&to=" + phoneNumber + "&pin=" + params[:code]
+          if params[:country_name] == "Canada"
+            
+            text = "Your code : " + params[:code]
+            url = "https://rest.nexmo.com/sms/json?api_key=a86782bd&api_secret=68a115a0&from=12069396333&to=" + phoneNumber + "&text=" + text
+            
+          else
+            url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=a86782bd&api_secret=68a115a0&to=" + phoneNumber + "&pin=" + params[:code]
+          end
 
         else
 
