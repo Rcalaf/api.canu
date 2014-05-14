@@ -1,6 +1,8 @@
 class UsersController < ApplicationController
    before_filter :restrict_access, :except => [:create,:mail_verification,:sms_verification,:sms_verification_v2_failed,:send_sms_reset_password,:reset_password]
   
+   serialization_scope nil
+
   def index
     render json: User.all
   end
@@ -8,7 +10,7 @@ class UsersController < ApplicationController
   def activities
     if params[:type] == "profile"
       user = User.find(params[:user_id])
-      render json: user.schedule.active(Time.zone.now)
+      render json: user.schedule.active(Time.zone.now), scope: user
     elsif params[:type] == "tribes"
       user = User.find(params[:user_id])
       allActivities = Array.new
@@ -36,7 +38,7 @@ class UsersController < ApplicationController
         end
       end
       allActivitiesSorted = allActivities.sort { |a,b| a.start <=> b.start }
-      render json: allActivitiesSorted
+      render json: allActivitiesSorted, scope: user
     end
   end
   

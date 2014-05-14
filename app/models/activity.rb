@@ -45,6 +45,8 @@ class Activity < ActiveRecord::Base
   has_many :messages, order: "created_at asc", dependent: :destroy
 
   has_many :invitation_lists, dependent: :destroy
+
+  has_many :notifications, dependent: :destroy
   
   validates :title, :presence => true  
 
@@ -52,7 +54,6 @@ class Activity < ActiveRecord::Base
 
     Thread.new do
       # if you are around the event
-
       name = ""
 
       if activity.user.first_name.blank?
@@ -76,6 +77,13 @@ class Activity < ActiveRecord::Base
             count = Counter.find_by_user_id(user.id)
             if count
               if count.unlock
+
+                notification = Notification.new
+                notification.activity = activity
+                notification.user = user
+                notification.type = 2
+                notification.save()
+
                 user.devices.each do |device| 
                   device.update_attribute(:badge,device.badge.to_i + 1)
                   APNS.send_notification(device.token,{:alert => "The activity \"#{activity.title}\" has been created on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity around'}}})
@@ -89,6 +97,13 @@ class Activity < ActiveRecord::Base
       #if you are invited
       activity.invitation_lists.each do |invitation_list|
         invitation_list.attendees_invitation.each do |user|
+
+          notification = Notification.new
+          notification.activity = activity
+          notification.user = user
+          notification.type = 1
+          notification.save()
+
           user.devices.each do |device| 
             puts device.token
             device.update_attribute(:badge,device.badge.to_i + 1)
@@ -111,6 +126,13 @@ class Activity < ActiveRecord::Base
     end
 
     new_peoples.each do |user|
+
+      notification = Notification.new
+      notification.activity = activity
+      notification.user = user
+      notification.type = 1
+      notification.save()
+
       user.devices.each do |device| 
           puts device.token
           device.update_attribute(:badge,device.badge.to_i + 1)
@@ -130,6 +152,14 @@ class Activity < ActiveRecord::Base
         name = new_user.first_name
       end
        activity.attendees.each do |user|
+
+        notification = Notification.new
+        notification.activity = activity
+        notification.user = user
+        notification.type = 3
+        notification.attribute_3_4 = name
+        notification.save()
+
         user.devices.each do |device| 
            device.update_attribute(:badge,device.badge.to_i + 1)
            APNS.send_notification(device.token,{:alert => "#{name} is going to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'new invit'}}})
@@ -149,6 +179,14 @@ class Activity < ActiveRecord::Base
         name = remove_user.first_name
       end
        activity.attendees.each do |user|
+
+        notification = Notification.new
+        notification.activity = activity
+        notification.user = user
+        notification.type = 4
+        notification.attribute_3_4 = name
+        notification.save()
+
         user.devices.each do |device| 
            device.update_attribute(:badge,device.badge.to_i + 1)
            APNS.send_notification(device.token,{:alert => "#{name} is no longer going to #{activity.title}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'remove invit'}}})
@@ -187,6 +225,34 @@ class Activity < ActiveRecord::Base
         end
 
         self.attendees.each do |user|
+
+          if self.title_changed?
+            notification = Notification.new
+            notification.activity = activity
+            notification.user = user
+            notification.type = 5
+            notification.attribute_3_4 = name
+            notification.save()
+          end
+
+          if self.start_changed?
+            notification = Notification.new
+            notification.activity = activity
+            notification.user = user
+            notification.type = 6
+            notification.attribute_3_4 = name
+            notification.save()
+          end
+
+          if self.city_changed? || self.street_changed? || self.zip_code_changed? || self.country_changed? || self.latitude_changed? || self.longitude_changed?
+            notification = Notification.new
+            notification.activity = activity
+            notification.user = user
+            notification.type = 7
+            notification.attribute_3_4 = name
+            notification.save()
+          end
+
           user.devices.each do |device|
              device.update_attribute(:badge,device.badge.to_i + 1)
              APNS.send_notification(device.token,{:alert => text,:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edit activity'}}})

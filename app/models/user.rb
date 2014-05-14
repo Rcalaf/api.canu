@@ -46,6 +46,8 @@ class User < ActiveRecord::Base
 
   has_many :invitation_lists
 
+  has_many :notifications, dependent: :destroy
+
   has_and_belongs_to_many :schedule_invitation,
                           class_name: "InvitationList",
                           join_table: "invitation_lists_users", 

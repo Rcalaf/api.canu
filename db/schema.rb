@@ -11,14 +11,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140424122336) do
+ActiveRecord::Schema.define(:version => 20140514113310) do
 
   create_table "activities", :force => true do |t|
     t.string   "title"
     t.text     "description"
     t.datetime "start"
     t.time     "length"
-    t.datetime "end_date"
     t.integer  "user_id"
     t.float    "latitude"
     t.float    "longitude"
@@ -30,6 +29,7 @@ ActiveRecord::Schema.define(:version => 20140424122336) do
     t.string   "image_content_type"
     t.integer  "image_file_size"
     t.datetime "image_updated_at"
+    t.datetime "end_date"
     t.boolean  "private_location",   :default => false
     t.string   "invitation_token"
     t.string   "place_name"
@@ -111,6 +111,16 @@ ActiveRecord::Schema.define(:version => 20140424122336) do
     t.datetime "updated_at",  :null => false
   end
 
+  create_table "notifications", :force => true do |t|
+    t.integer  "activity_id"
+    t.integer  "user_id"
+    t.integer  "type"
+    t.string   "attribute_3_4"
+    t.string   "attribute_5"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
   create_table "users", :force => true do |t|
     t.string   "token"
     t.string   "salt"
@@ -131,7 +141,7 @@ ActiveRecord::Schema.define(:version => 20140424122336) do
     t.string   "phone_number"
     t.boolean  "phone_verified"
     t.integer  "ghostuser_id"
-    t.boolean  "is_ghost",                   :default => false
+    t.string   "phone_code"
   end
 
 end
