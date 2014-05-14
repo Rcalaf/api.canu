@@ -161,7 +161,7 @@ class Activity < ActiveRecord::Base
   
   def set_invitation_token
     begin 
-      self.invitation_token = SecureRandom.hex(9)
+      self.invitation_token = SecureRandom.hex(4)
     end while self.class.exists?(invitation_token: invitation_token)
   end
   
