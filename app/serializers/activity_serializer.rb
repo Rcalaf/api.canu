@@ -1,5 +1,5 @@
 class ActivitySerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :attendee_ids, :start, :length, :end_date, :city, :street, :zip_code, :country, :latitude, :longitude, :private_location, :user, :invitation_token, :place_name, :notifications
+  attributes :id, :title, :description, :attendee_ids, :start, :length, :end_date, :city, :street, :zip_code, :country, :latitude, :longitude, :private_location, :user, :invitation_token, :place_name, :all_notifications
   
   #has_one :user
   # has_many :attendees, embed: :ids
@@ -22,18 +22,21 @@ class ActivitySerializer < ActiveModel::Serializer
     data
   end
   
-  def notifications
-
+  def all_notifications
+    
     if scope
+
       current_user = scope
       activity = object
 
-      puts "Error"
-      puts current_user.id
-      puts activity.id
+      notifs = Notification.where(' activity_id = ? AND user_id = ?', activity.id, current_user.id).where(:read =>  false)
 
-      notifications = Notifications.where(' activity_id = ? AND user_id = ? ', current_user.id, activity.id)
-      notifications
+
+      
+      notifs
+      
+    else
+      []
     end
 
   end

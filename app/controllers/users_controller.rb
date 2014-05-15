@@ -8,7 +8,15 @@ class UsersController < ApplicationController
   end
   
   def activities
-    if params[:type] == "profile"
+    if params[:type] == "public"
+      user = User.find(params[:user_id])
+      if (params[:latitude] && params[:longitude])
+        render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(false), scope: user
+      else
+        render json: Activity.active(Time.zone.now).privacy_location(false), scope: user
+      end
+
+    elsif params[:type] == "profile"
       user = User.find(params[:user_id])
       render json: user.schedule.active(Time.zone.now), scope: user
     elsif params[:type] == "tribes"
@@ -348,12 +356,24 @@ class UsersController < ApplicationController
       end
     end
 
-    device = Device.create(token: params[:device_token], user_id: user.id)
+    countNotifs = 0
+
+    allNotifsUser = Notification.where('user_id = ?', user.id).where(:read =>  false)
+
+    allNotifsUser.each do |notif|
+      if notif.activity.end_date > Time.zone.now
+        countNotifs = countNotifs + 1
+      end
+    end
+
+    device = Device.create(token: params[:device_token], user_id: user.id,  badge: countNotifs)
     #if user.devices << Device.create(:token => params[:device_token])
     if device.valid?
-       render json: {user: user, device: device}
+       render json: {user: user, device: device, number_notifications: countNotifs}
     else
-       render json: {user: user, device_errors: device.errors}, status: 200
+      previousDevice = Device.find_by_token(params[:device_token])
+      previousDevice.update_attribute(:badge,countNotifs)
+      render json: {user: user, device_errors: device.errors, number_notifications: countNotifs}, status: 200
     end
   end
   

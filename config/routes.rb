@@ -14,6 +14,7 @@ CanuApi::Application.routes.draw do
 
   match 'users/:user_id/activities/' => 'users#activities', :type => 'profile', :via => :get
   match 'users/:user_id/activities/tribes/' => 'users#activities', :type => 'tribes', :via => :get
+  match 'users/:user_id/activities/public/' => 'users#activities', :type => 'public', :via => :get
   match 'users/:user_id/activities/' => 'activities#create', :via => :post
   match 'users/:user_id/reset-password' => 'users#reset_password', :via => :put
   match 'users/:user_id/profile-image' => 'users#update_profile_pic', :via => :put
@@ -44,6 +45,8 @@ CanuApi::Application.routes.draw do
   match 'session/check-username' => 'session#check_user_name'
   match 'session/login/' => 'session#login', :as => 'login', :via => :post
   match 'session/logout/' => 'session#logout', as: 'logout', :via => :post
+
+  match 'notifications/:user_id/activities/:activity_id' => 'notification#read', :via => :get
   
   match 'counter/' => 'counter#show', :via => :get
   match 'counter/' => 'counter#countMe', :via => :post
