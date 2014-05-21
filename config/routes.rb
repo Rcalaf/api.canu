@@ -23,6 +23,7 @@ CanuApi::Application.routes.draw do
   match 'users/:user_id/activities/:activity_id' => 'activities#update', :via => :put
   match 'users/:user_id/activities/:activity_id' => 'activities#destroy', :via => :delete
   match 'users/:user_id/activities/:activity_id/addpeople' => 'activities#addpeople', :via => :post
+  match 'users/search/searchbar' => 'users#search_users', :via => :post
   
 
 

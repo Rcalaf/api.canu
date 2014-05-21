@@ -22,12 +22,12 @@ class Message < ActiveRecord::Base
       name = self.user.first_name
     end
 
-    # notification = Notification.new
-    # notification.activity = self.activity
-    # notification.user = user
-    # notification.type_notifications = 8
-    # notification.attribute_8 = name
-    # notification.save()
+    notification = Notification.new
+    notification.activity = self.activity
+    notification.user = user
+    notification.type_notifications = 8
+    notification.attribute_8 = name
+    notification.save()
 
     Thread.new do
        user.devices.each do |device| 

@@ -4,4 +4,12 @@ class Notification < ActiveRecord::Base
   belongs_to :activity
   belongs_to :user
 
+  before_save :check_validation_notifications
+
+  private
+
+  def check_validation_notifications
+    false
+  end
+
 end

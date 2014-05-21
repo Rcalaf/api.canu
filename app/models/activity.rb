@@ -75,22 +75,19 @@ class Activity < ActiveRecord::Base
           end
         end
         if !userAlreadyInvited
-          count = Counter.find_by_user_id(user.id)
-          if count
-            if count.unlock
 
-              # notification = Notification.new
-              # notification.activity = activity
-              # notification.user = user
-              # notification.type_notifications = 2
-              # notification.save()
+          if activity.user != user
+            notification = Notification.new
+            notification.activity = activity
+            notification.user = user
+            notification.type_notifications = 2
+            notification.save()
 
-              Thread.new do
-                puts "Arund you"
-                user.devices.each do |device| 
-                  device.update_attribute(:badge,device.badge.to_i + 1)
-                  APNS.send_notification(device.token,{:alert => "The activity \"#{activity.title}\" has been created on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity around'}}})
-                end
+            Thread.new do
+              puts "Arund you"
+              user.devices.each do |device| 
+                device.update_attribute(:badge,device.badge.to_i + 1)
+                APNS.send_notification(device.token,{:alert => "The activity \"#{activity.title}\" has been created on #{activity.start.strftime('%b %d')} at #{activity.start.strftime('%H:%M')}",:badge => device.badge,:sound => 'default',:other => {info: {id: activity.id, type: 'create activity around'}}})
               end
             end
           end
@@ -104,11 +101,11 @@ class Activity < ActiveRecord::Base
 
         puts "Create activity notification"
 
-        # notification = Notification.new
-        # notification.activity = activity
-        # notification.user = user
-        # notification.type_notifications = 1
-        # notification.save()
+        notification = Notification.new
+        notification.activity = activity
+        notification.user = user
+        notification.type_notifications = 1
+        notification.save()
 
         Thread.new do
           user.devices.each do |device| 
@@ -133,11 +130,11 @@ class Activity < ActiveRecord::Base
 
     new_peoples.each do |user|
 
-      # notification = Notification.new
-      # notification.activity = activity
-      # notification.user = user
-      # notification.type_notifications = 1
-      # notification.save()
+      notification = Notification.new
+      notification.activity = activity
+      notification.user = user
+      notification.type_notifications = 1
+      notification.save()
 
       Thread.new do
         user.devices.each do |device| 
@@ -159,12 +156,12 @@ class Activity < ActiveRecord::Base
     end
      activity.attendees.each do |user|
 
-      # notification = Notification.new
-      # notification.activity = activity
-      # notification.user = user
-      # notification.type_notifications = 3
-      # notification.attribute_3_4 = name
-      # notification.save()
+      notification = Notification.new
+      notification.activity = activity
+      notification.user = user
+      notification.type_notifications = 3
+      notification.attribute_3_4 = name
+      notification.save()
 
       Thread.new do
         user.devices.each do |device| 
@@ -186,12 +183,12 @@ class Activity < ActiveRecord::Base
     end
      activity.attendees.each do |user|
 
-      # notification = Notification.new
-      # notification.activity = activity
-      # notification.user = user
-      # notification.type_notifications = 4
-      # notification.attribute_3_4 = name
-      # notification.save()
+      notification = Notification.new
+      notification.activity = activity
+      notification.user = user
+      notification.type_notifications = 4
+      notification.attribute_3_4 = name
+      notification.save()
 
       Thread.new do
         user.devices.each do |device| 
@@ -214,62 +211,64 @@ class Activity < ActiveRecord::Base
 
     if self.changed?
 
-      puts "edit Thread"
+      notOnlyDescriptionChanged = false
 
       text = ""
 
       if self.title_changed?
         text = text + "#{self.title_was} is now #{self.title} "
+        notOnlyDescriptionChanged = true
       else
         text = text + "#{self.title} is now "
       end
 
       if self.start_changed?
         text = text + "at #{self.start.strftime('%H:%M')} #{self.start.strftime('%b %d')} "
+        notOnlyDescriptionChanged = true
       end
 
       if self.city_changed? || self.street_changed? || self.zip_code_changed? || self.country_changed? || self.latitude_changed? || self.longitude_changed?
         text = text + "at a new location"
+        notOnlyDescriptionChanged = true
       end
 
-      self.attendees.each do |user|
+      if notOnlyDescriptionChanged
+          
+        self.attendees.each do |user|
+          if self.user != user
+            if self.title_changed?
+              notification = Notification.new
+              notification.activity = self
+              notification.user = user
+              notification.type_notifications = 5
+              notification.attribute_5 = self.title_was
+              notification.save()
+            end
 
-        puts "attendees"
+            if self.start_changed?
+              notification = Notification.new
+              notification.activity = self
+              notification.user = user
+              notification.type_notifications = 6
+              notification.save()
+            end
 
-        # if self.title_changed?
-        #   puts "new title"
-        #   notification = Notification.new
-        #   notification.activity = self
-        #   notification.user = user
-        #   notification.type_notifications = 5
-        #   notification.attribute_5 = self.title_was
-        #   notification.save()
-        # else
-        #   puts "Same title"
-        # end
+            if self.city_changed? || self.street_changed? || self.zip_code_changed? || self.country_changed? || self.latitude_changed? || self.longitude_changed?
+              notification = Notification.new
+              notification.activity = self
+              notification.user = user
+              notification.type_notifications = 7
+              notification.save()
+            end
 
-        # if self.start_changed?
-        #   notification = Notification.new
-        #   notification.activity = self
-        #   notification.user = user
-        #   notification.type_notifications = 6
-        #   notification.save()
-        # end
-
-        # if self.city_changed? || self.street_changed? || self.zip_code_changed? || self.country_changed? || self.latitude_changed? || self.longitude_changed?
-        #   notification = Notification.new
-        #   notification.activity = self
-        #   notification.user = user
-        #   notification.type_notifications = 7
-        #   notification.save()
-        # end
-
-        Thread.new do
-          user.devices.each do |device|
-             device.update_attribute(:badge,device.badge.to_i + 1)
-             APNS.send_notification(device.token,{:alert => text,:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edit activity'}}})
+            Thread.new do
+              user.devices.each do |device|
+                 device.update_attribute(:badge,device.badge.to_i + 1)
+                 APNS.send_notification(device.token,{:alert => text,:badge => device.badge,:sound => 'default',:other => {info: {id: self.id, type: 'edit activity'}}})
+              end
+            end
           end
-        end
+        end 
       end
     end
   end

@@ -98,6 +98,11 @@ class User < ActiveRecord::Base
   end
   
   private  
+
+    def self.search(search)
+      search_condition = "%" + search + "%"
+      find(:all, :conditions => ['( user_name LIKE ? OR first_name LIKE ? OR last_name LIKE ? ) AND phone_verified = ?', search_condition, search_condition,search_condition,true])
+    end
   
     def create_token_for_new_user
       self.token = User.generate_access_token

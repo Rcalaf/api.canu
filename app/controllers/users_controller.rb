@@ -126,31 +126,6 @@ class UsersController < ApplicationController
 
   def sms_verification_v2_failed
 
-    # puts params
-    # puts "Phone number:"
-    # puts params[:msisdn]
-    if params[:msisdn][0,1] == 1
-      # puts "US Phone number"
-      if params[:status] == "delivered" || params[:status] == "accepted"
-        # puts "It's delivered"
-      else
-        # puts "It's not delivered"
-        Mailer.sms_failed().deliver
-      end
-    else
-      # puts "Not US Phone number"
-    end
-    # puts "Status:"
-    # puts params[:status]
-    # if params[:status] == "delivered" || params[:status] == "accepted"
-    #   puts "It's delivered"
-    # else
-    #   puts "It's not delivered"
-    #   Mailer.sms_failed().deliver
-    # end
-    # puts "Error code:"
-    # puts params[:err-code]
-
     render json: "",status: 200
 
   end
@@ -348,12 +323,9 @@ class UsersController < ApplicationController
   
   def set_device_token
     user = User.find(params[:user_id]) 
-    # if this device token is saved for another one user / Delete this token
-    allSameDevices = Device.where('token = ?',params[:device_token])
-    allSameDevices.each do |sameDevice|
-      if sameDevice.user_id != user.id
-        sameDevice.destroy()
-      end
+    # delete previous token
+    user.devices.each do |device| 
+      device.destroy()
     end
 
     countNotifs = 0
@@ -375,6 +347,13 @@ class UsersController < ApplicationController
       previousDevice.update_attribute(:badge,countNotifs)
       render json: {user: user, device_errors: device.errors, number_notifications: countNotifs}, status: 200
     end
+  end
+
+  def search_users
+    
+    users = User.search params[:search]
+    render json: users, status: 200
+
   end
   
   def destroy
