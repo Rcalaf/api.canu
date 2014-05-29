@@ -9,6 +9,7 @@ CanuApi::Application.routes.draw do
   match 'users/send-sms' => 'users#send_sms', :as => 'send_sms', :via => :post
   match 'users/send-sms-reset-password' => 'users#send_sms_reset_password', :as => 'send_sms_reset_password', :via => :post
   match 'users/search/phonebook' => 'users#phonebook', :as => 'phonebook', :via => :post
+  match 'users/search/phonebook/:user_id/tribe' => 'users#phonebookandtribe', :as => 'phonebookandtribe', :via => :post
   
   resources :users 
 
@@ -24,7 +25,6 @@ CanuApi::Application.routes.draw do
   match 'users/:user_id/activities/:activity_id' => 'activities#destroy', :via => :delete
   match 'users/:user_id/activities/:activity_id/addpeople' => 'activities#addpeople', :via => :post
   match 'users/search/searchbar' => 'users#search_users', :via => :post
-  
 
 
   resources :activities
@@ -51,6 +51,10 @@ CanuApi::Application.routes.draw do
   
   match 'counter/' => 'counter#show', :via => :get
   match 'counter/' => 'counter#countMe', :via => :post
+
+  match 'tribes/:user_id/list/' => 'tribes#list', :via => :get
+  match 'tribes/:user_id/add/:friend_id' => 'tribes#add', :via => :get
+  match 'tribes/:user_id/remove/:friend_id' => 'tribes#remove', :via => :get
 
   match 'statistics/all' => 'statistics#index', :as => 'all_stats', :via => :get
     

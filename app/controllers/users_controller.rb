@@ -100,23 +100,28 @@ class UsersController < ApplicationController
       
     user = User.find_by_id(params[:user_id])
     if user
-      # Disable phone_verified to users when theys have this phone number
-      usersWithSamePhoneNumbers = User.where('phone_number = ?',params[:phone_number])
-      usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
-        userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
+
+      if user.phone_number != params[:phone_number]
+        # Disable phone_verified to users when theys have this phone number
+        usersWithSamePhoneNumbers = User.where('phone_number = ?',params[:phone_number])
+        usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
+          userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
+        end
+        
+        user.update_attributes(phone_number:params[:phone_number],phone_verified: true)
+
+        ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
+
+        if ghostuser
+          user.ghostuser = ghostuser
+          user.save
+          ghostuser.update_attributes(isLinked: true)
+        end
+
+        render json: user, status: 200
+      else
+        render json: user, status: 200
       end
-      
-      user.update_attributes(phone_number:params[:phone_number],phone_verified: true)
-
-      ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
-
-      if ghostuser
-        user.ghostuser = ghostuser
-        user.save
-        ghostuser.update_attributes(isLinked: true)
-      end
-
-      render json: user, status: 200
 
     else
       render json: params, status: 400
@@ -243,6 +248,41 @@ class UsersController < ApplicationController
       render json: user.errors, status: 400
     end
     
+  end
+
+  def phonebookandtribe
+
+    tribes = []
+
+    relationsTribe = Tribe.where('user_id = ?',params[:user_id])
+
+    relationsTribe.each do |relation|
+      user = User.find_by_id(relation.friend_id)
+      tribes << {id: user.id, first_name: user.first_name, last_name:user.last_name, 
+                  email:user.email, active:user.active, profile_pic: user.profile_image.url(:default, timestamp: false),
+                  user_name: user.user_name, phone_number: user.phone_number, 
+                  phone_verified:user.phone_verified }
+    end
+
+    allUsers = Array.new
+
+    usersWithPhoneNumber = User.where('phone_verified = ?',true)
+
+    params[:phone_numbers].each do |phone_number|
+
+      user = usersWithPhoneNumber.find_by_phone_number(phone_number)
+
+      if user
+        allUsers << {id: user.id, first_name: user.first_name, last_name:user.last_name, 
+                    email:user.email, active:user.active, profile_pic: user.profile_image.url(:default, timestamp: false),
+                    user_name: user.user_name, phone_number: user.phone_number, 
+                    phone_verified:user.phone_verified }
+      end
+
+    end
+
+    render json: {users:allUsers,tribe:tribes}
+
   end
 
   def phonebook
