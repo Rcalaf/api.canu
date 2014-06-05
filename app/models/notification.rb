@@ -9,7 +9,7 @@ class Notification < ActiveRecord::Base
   private
 
   def check_validation_notifications
-    false
+    true
   end
 
 end
