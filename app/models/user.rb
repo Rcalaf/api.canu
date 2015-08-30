@@ -46,6 +46,8 @@ class User < ActiveRecord::Base
 
   has_many :invitation_lists
 
+  has_many :notifications, dependent: :destroy
+
   has_and_belongs_to_many :schedule_invitation,
                           class_name: "InvitationList",
                           join_table: "invitation_lists_users", 
@@ -96,6 +98,11 @@ class User < ActiveRecord::Base
   end
   
   private  
+
+    def self.search(search)
+      search_condition = "%" + search + "%"
+      find(:all, :conditions => ['( user_name LIKE ? OR first_name LIKE ? OR last_name LIKE ? ) AND phone_verified = ?', search_condition, search_condition,search_condition,true])
+    end
   
     def create_token_for_new_user
       self.token = User.generate_access_token

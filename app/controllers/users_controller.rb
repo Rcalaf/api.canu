@@ -1,14 +1,24 @@
 class UsersController < ApplicationController
    before_filter :restrict_access, :except => [:create,:mail_verification,:sms_verification,:sms_verification_v2_failed,:send_sms_reset_password,:reset_password]
   
+   serialization_scope nil
+
   def index
     render json: User.all
   end
   
   def activities
-    if params[:type] == "profile"
+    if params[:type] == "public"
       user = User.find(params[:user_id])
-      render json: user.schedule.active(Time.zone.now)
+      if (params[:latitude] && params[:longitude])
+        render json: Activity.active(Time.zone.now).in_range(params[:latitude].to_f,params[:longitude].to_f).privacy_location(false), scope: user
+      else
+        render json: Activity.active(Time.zone.now).privacy_location(false), scope: user
+      end
+
+    elsif params[:type] == "profile"
+      user = User.find(params[:user_id])
+      render json: user.schedule.active(Time.zone.now), scope: user
     elsif params[:type] == "tribes"
       user = User.find(params[:user_id])
       allActivities = Array.new
@@ -36,7 +46,7 @@ class UsersController < ApplicationController
         end
       end
       allActivitiesSorted = allActivities.sort { |a,b| a.start <=> b.start }
-      render json: allActivitiesSorted
+      render json: allActivitiesSorted, scope: user
     end
   end
   
@@ -90,23 +100,28 @@ class UsersController < ApplicationController
       
     user = User.find_by_id(params[:user_id])
     if user
-      # Disable phone_verified to users when theys have this phone number
-      usersWithSamePhoneNumbers = User.where('phone_number = ?',params[:phone_number])
-      usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
-        userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
+
+      if user.phone_number != params[:phone_number]
+        # Disable phone_verified to users when theys have this phone number
+        usersWithSamePhoneNumbers = User.where('phone_number = ?',params[:phone_number])
+        usersWithSamePhoneNumbers.each do |userWithSamePhoneNumber|
+          userWithSamePhoneNumber.update_attributes(phone_number: nil,phone_verified: false)
+        end
+        
+        user.update_attributes(phone_number:params[:phone_number],phone_verified: true)
+
+        ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
+
+        if ghostuser
+          user.ghostuser = ghostuser
+          user.save
+          ghostuser.update_attributes(isLinked: true)
+        end
+
+        render json: user, status: 200
+      else
+        render json: user, status: 200
       end
-      
-      user.update_attributes(phone_number:params[:phone_number],phone_verified: true)
-
-      ghostuser = Ghostuser.find_by_phone_number(params[:phone_number])
-
-      if ghostuser
-        user.ghostuser = ghostuser
-        user.save
-        ghostuser.update_attributes(isLinked: true)
-      end
-
-      render json: user, status: 200
 
     else
       render json: params, status: 400
@@ -115,31 +130,6 @@ class UsersController < ApplicationController
   end
 
   def sms_verification_v2_failed
-
-    # puts params
-    # puts "Phone number:"
-    # puts params[:msisdn]
-    if params[:msisdn][0,1] == 1
-      # puts "US Phone number"
-      if params[:status] == "delivered" || params[:status] == "accepted"
-        # puts "It's delivered"
-      else
-        # puts "It's not delivered"
-        Mailer.sms_failed().deliver
-      end
-    else
-      # puts "Not US Phone number"
-    end
-    # puts "Status:"
-    # puts params[:status]
-    # if params[:status] == "delivered" || params[:status] == "accepted"
-    #   puts "It's delivered"
-    # else
-    #   puts "It's not delivered"
-    #   Mailer.sms_failed().deliver
-    # end
-    # puts "Error code:"
-    # puts params[:err-code]
 
     render json: "",status: 200
 
@@ -154,10 +144,20 @@ class UsersController < ApplicationController
 
     url = ""
 
+    phoneNumber = phoneNumber.gsub(/\s+/, "")
+    phoneNumber = phoneNumber.gsub(/-+/, "")
+    
     # Use short code
     if params[:country_code] == "+1"
 
-      url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=a86782bd&api_secret=68a115a0&to=" + phoneNumber + "&pin=" + params[:code]
+      if params[:country_name] == "Canada"
+        
+        text = "Your code : " + params[:code]
+        url = "https://rest.nexmo.com/sms/json?api_key=a86782bd&api_secret=68a115a0&from=12069396333&to=" + phoneNumber + "&text=" + text
+        
+      else
+        url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=a86782bd&api_secret=68a115a0&to=" + phoneNumber + "&pin=" + params[:code]
+      end
 
     else
 
@@ -203,10 +203,20 @@ class UsersController < ApplicationController
 
         url = ""
 
+        phoneNumber = phoneNumber.gsub(/\s+/, "")
+        phoneNumber = phoneNumber.gsub(/-+/, "")
+        
         # Use short code
         if params[:country_code] == "+1"
 
-          url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=a86782bd&api_secret=68a115a0&to=" + phoneNumber + "&pin=" + params[:code]
+          if params[:country_name] == "Canada"
+            
+            text = "Your code : " + params[:code]
+            url = "https://rest.nexmo.com/sms/json?api_key=a86782bd&api_secret=68a115a0&from=12069396333&to=" + phoneNumber + "&text=" + text
+            
+          else
+            url = "https://rest.nexmo.com/sc/us/2fa/json?api_key=a86782bd&api_secret=68a115a0&to=" + phoneNumber + "&pin=" + params[:code]
+          end
 
         else
 
@@ -238,6 +248,41 @@ class UsersController < ApplicationController
       render json: user.errors, status: 400
     end
     
+  end
+
+  def phonebookandtribe
+
+    tribes = []
+
+    relationsTribe = Tribe.where('user_id = ?',params[:user_id])
+
+    relationsTribe.each do |relation|
+      user = User.find_by_id(relation.friend_id)
+      tribes << {id: user.id, first_name: user.first_name, last_name:user.last_name, 
+                  email:user.email, active:user.active, profile_pic: user.profile_image.url(:default, timestamp: false),
+                  user_name: user.user_name, phone_number: user.phone_number, 
+                  phone_verified:user.phone_verified }
+    end
+
+    allUsers = Array.new
+
+    usersWithPhoneNumber = User.where('phone_verified = ?',true)
+
+    params[:phone_numbers].each do |phone_number|
+
+      user = usersWithPhoneNumber.find_by_phone_number(phone_number)
+
+      if user
+        allUsers << {id: user.id, first_name: user.first_name, last_name:user.last_name, 
+                    email:user.email, active:user.active, profile_pic: user.profile_image.url(:default, timestamp: false),
+                    user_name: user.user_name, phone_number: user.phone_number, 
+                    phone_verified:user.phone_verified }
+      end
+
+    end
+
+    render json: {users:allUsers,tribe:tribes}
+
   end
 
   def phonebook
@@ -318,21 +363,37 @@ class UsersController < ApplicationController
   
   def set_device_token
     user = User.find(params[:user_id]) 
-    # if this device token is saved for another one user / Delete this token
-    allSameDevices = Device.where('token = ?',params[:device_token])
-    allSameDevices.each do |sameDevice|
-      if sameDevice.user_id != user.id
-        sameDevice.destroy()
+    # delete previous token
+    user.devices.each do |device| 
+      device.destroy()
+    end
+
+    countNotifs = 0
+
+    allNotifsUser = Notification.where('user_id = ?', user.id).where(:read =>  false)
+
+    allNotifsUser.each do |notif|
+      if notif.activity.end_date > Time.zone.now
+        countNotifs = countNotifs + 1
       end
     end
 
-    device = Device.create(token: params[:device_token], user_id: user.id)
+    device = Device.create(token: params[:device_token], user_id: user.id,  badge: countNotifs)
     #if user.devices << Device.create(:token => params[:device_token])
     if device.valid?
-       render json: {user: user, device: device}
+       render json: {user: user, device: device, number_notifications: countNotifs}
     else
-       render json: {user: user, device_errors: device.errors}, status: 200
+      previousDevice = Device.find_by_token(params[:device_token])
+      previousDevice.update_attribute(:badge,countNotifs)
+      render json: {user: user, device_errors: device.errors, number_notifications: countNotifs}, status: 200
     end
+  end
+
+  def search_users
+    
+    users = User.search params[:search]
+    render json: users, status: 200
+
   end
   
   def destroy
