@@ -23,7 +23,6 @@ class ActivitySerializer < ActiveModel::Serializer
        phone_number: "Unknown", 
        phone_verified: "Unknown",
        profile_pic: "Unknown" }
-      
     else
 
       first_name = ""
