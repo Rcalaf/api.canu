@@ -38,6 +38,6 @@ production:
   database: api.canu.se_production
   pool: 5
   username: root
-  #password: wL8XSPha
-  password: Itshalfpast8
+  password: wL8XSPha
+  #password: Itshalfpast8
  # socket: /tmp/mysql.sock
